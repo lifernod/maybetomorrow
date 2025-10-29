@@ -1,9 +1,14 @@
-import type { Component } from 'solid-js';
+import Header from "./components/header";
+import ScheduleView from "./views/schedule-view";
+import Footer from "./components/footer";
 
-const App: Component = () => {
-  return (
-    <p class="text-4xl text-green-700 text-center py-20">Hello tailwind!</p>
-  );
-};
+export default function App() {
 
-export default App;
+    return (
+        <>
+            <Header />
+            <ScheduleView />
+            <Footer />
+        </>
+    )
+}
