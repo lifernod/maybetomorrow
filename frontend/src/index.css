@@ -3,10 +3,6 @@
 
 @import 'tailwindcss';
 
-* {
-    @apply antialiased;
-}
-
 @theme {
     --color-primary: #FF6900;
 
@@ -20,4 +16,8 @@
     /*Fonts*/
     --font-noto: 'Noto Sans', sans-serif;
     --font-montserrat: 'Montserrat Alternates', sans-serif;
+}
+
+* {
+    @apply antialiased font-noto;
 }
