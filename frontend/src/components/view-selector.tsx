@@ -13,11 +13,17 @@ export default function ViewSelector(props: ViewSelectorProps) {
     }
 
     return (
-        <div>
+        <div class={"mx-auto w-1/3 h-12 flex items-center justify-around bg-table-undefined"}>
             <Index each={viewModes}>
                 {
                     (mode) => (
-                        <button onClick={[handleClick, mode()]}>{mode().valueOf()}</button>
+                        <button
+                            classList={{
+                                "border-r-2 cursor-pointer text-lg font-medium border-r-table-border last-of-type:border-r-0 w-full h-full": true,
+                                "border-b-2 border-b-primary font-semibold": props.viewMode == mode()
+                            }}
+                            onClick={[handleClick, mode()]}
+                        >{mode().valueOf()}</button>
                     )
                 }
             </Index>
