@@ -1,1 +1,12 @@
 @import 'tailwindcss';
+
+@theme {
+    --color-primary: #FF6900;
+
+    /*Table colors*/
+    --color-table-busy: #FFB86A;
+    --color-table-free: #A9FF96;
+    --color-table-undefined: #FFFAF4;
+    --color-table-border: rgba(255, 105, 0, 0.1);
+    --color-table-uneditable: #D4D4D8;
+}
