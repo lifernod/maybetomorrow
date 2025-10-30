@@ -1,5 +1,5 @@
 import {children, JSXElement, Suspense} from "solid-js";
-import Loading from "./Loading";
+import Loading from "./loading";
 
 type LazyViewProps = {
     children: JSXElement;
