@@ -29,11 +29,11 @@ func SetupApiHandlers(app *fiber.App) {
 		return c.SendString("Days get by month id")
 	})
 
-	api.Get("/user/getByUUID", func(c *fiber.Ctx) error {
+	api.Get("/user/getByID", func(c *fiber.Ctx) error {
 		return c.SendString("User get by uuid")
 	})
 
-	api.Get("/user/getMonthsByUUID", func(c *fiber.Ctx) error {
+	api.Get("/user/getMonthsByID", func(c *fiber.Ctx) error {
 		return c.SendString("Months get by user uuid")
 	})
 }
