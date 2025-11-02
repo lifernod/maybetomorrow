@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"backend/handlers"
+	"backend/routes"
 )
 
 func main() {
@@ -11,7 +11,7 @@ func main() {
 
 	app := fiber.New();
 
-	handlers.SetupApiHandlers(app);
+	routes.SetupApiRoutes(app);
 
 	app.Listen(":4000");
 }
