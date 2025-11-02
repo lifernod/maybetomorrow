@@ -12,7 +12,6 @@ func main() {
 	app := fiber.New();
 
 	handlers.SetupApiHandlers(app);
-	handlers.SetupSiteHandlers(app);
 
-	app.Listen(":3000");
+	app.Listen(":4000");
 }
