@@ -12,25 +12,25 @@ const (
 )
 
 type User struct {
-	UserID    uuid.UUID `db:"user_id"`
-	Username  string    `db:"username"`
-	PasswordT string    `db:"password_t"`
+	UserID    uuid.UUID `json:"user_id"`
+	Username  string    `json:"username"`
+	PasswordT string    `json:"password_t"`
 }
 
 type Event struct {
-	EventID          int    `db:"event_id"`
-	EventName        string `db:"event_name"`
-	EventDescription string `db:"event_description"`
+	EventID          int    `json:"event_id"`
+	EventName        string `json:"event_name"`
+	EventDescription string `json:"event_description"`
 }
 
 type Day struct {
-	DayID     int     `db:"day_id"`
-	DayNumber byte    `db:"day_number"`
-	DayType   DayType `db:"day_type"`
+	DayID     int     `json:"day_id"`
+	DayNumber byte    `json:"day_number"`
+	DayType   DayType `json:"day_type"`
 }
 
 type Month struct {
-	MonthID     int  `db:"month_id"`
-	MonthNumber byte `db:"month_number"`
-	YearNumber  byte `db:"year_number"`
+	MonthID     int  `json:"month_id"`
+	MonthNumber byte `json:"month_number"`
+	YearNumber  byte `json:"year_number"`
 }
