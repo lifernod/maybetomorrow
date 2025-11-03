@@ -1,29 +1,36 @@
 package database
 
-import (
-	_ "database/sql"
-	_ "github.com/jackc/pgx/v5"
-	_ "github.com/jmoiron/sqlx"
+import "github.com/google/uuid"
+
+type DayType string
+
+const (
+	DayFree       DayType = "free"
+	DayBusy       DayType = "busy"
+	DayUndefined  DayType = "undefined"
+	DayUneditable DayType = "uneditable"
 )
 
+type User struct {
+	UserID    uuid.UUID `json:"user_id" db:"user_id"`
+	Username  string    `json:"username" db:"username"`
+	PasswordT string    `json:"password_t" db:"password_t"`
+}
+
 type Event struct {
-	event_id          int
-	event_name        string
-	event_description string
+	EventID          int    `json:"event_id" db:"event_id"`
+	EventName        string `json:"event_name" db:"event_name"`
+	EventDescription string `json:"event_description" db:"event_description"`
 }
 
 type Day struct {
-	day_id     int
-	day_number byte
+	DayID     int     `json:"day_id" db:"day_id"`
+	DayNumber byte    `json:"day_number" db:"day_number"`
+	DayType   DayType `json:"day_type" db:"day_type"`
 }
 
 type Month struct {
-	month_id     byte
-	month_number byte
-}
-
-type User struct {
-	user_id    string
-	username   string
-	password_t string
+	MonthID     int  `json:"month_id" db:"month_id"`
+	MonthNumber byte `json:"month_number" db:"month_number"`
+	YearNumber  byte `json:"year_number" db:"year_number"`
 }
