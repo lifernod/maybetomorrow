@@ -30,7 +30,7 @@ type Day struct {
 }
 
 type Month struct {
-	MonthID     int  `json:"month_id db:"month_id""`
+	MonthID     int  `json:"month_id" db:"month_id"`
 	MonthNumber byte `json:"month_number" db:"month_number"`
 	YearNumber  byte `json:"year_number" db:"year_number"`
 }
