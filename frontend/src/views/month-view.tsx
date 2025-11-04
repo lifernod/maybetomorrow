@@ -9,40 +9,21 @@ import DayTypesAnnotation from "../components/calendar/day-types-annotation";
 export default function MonthView() {
     const [month, { mutate }] = createResource(getExampleMonth);
 
-    const changeDayType = (day_id: Day["day_id"]) => {
+    const changeDay = (newDay: Day) => {
+        mutate(prev => {
+            if (!prev) return prev;
 
+            const days = prev.days.map(week =>
+                week.map(day => {
+                    if (day.day_id == newDay.day_id) return { ...newDay, day_id: day.day_id };
+                    else return day;
+                })
+            );
+
+            return { ...prev, days };
+        })
     }
 
-    // function changeDayType(day_id: Day["day_id"]) {
-    //     mutate(prev => {
-    //         if (!prev) return prev;
-    //
-    //         // Создаем копию, чтобы не мутировать напрямую
-    //         return prev.map(week =>
-    //             week.map(day => {
-    //                 if (day.day_id === day_id) {
-    //                     // Циклическое переключение типа дня
-    //                     let nextType;
-    //                     switch (day.day_type) {
-    //                         case DayType.Undefined:
-    //                             nextType = DayType.Free;
-    //                             break;
-    //                         case DayType.Free:
-    //                             nextType = DayType.Busy;
-    //                             break;
-    //                         case DayType.Busy:
-    //                             nextType = DayType.Undefined;
-    //                             break;
-    //                         default:
-    //                             nextType = day.day_type;
-    //                     }
-    //                     return { ...day, day_type: nextType };
-    //                 }
-    //                 return day;
-    //             })
-    //         );
-    //     });
-    // }
     return (
         <>
             <div class={"flex flex-col items-center justify-center mt-8"}>
@@ -61,7 +42,7 @@ export default function MonthView() {
 
                                         <DayTypesAnnotation />
 
-                                        <table>
+                                        <table class={"relative"}>
                                             <thead>
                                                 <tr>
                                                     <WeekDays/>
@@ -71,7 +52,7 @@ export default function MonthView() {
                                             <tbody>
                                                 <Calendar
                                                     days={loadedMonth().days}
-                                                    changeDayType={changeDayType}
+                                                    changeDay={changeDay}
                                                 />
                                             </tbody>
                                         </table>
