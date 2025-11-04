@@ -1,17 +1,21 @@
 package main
 
 import (
-	"fmt"
-	"github.com/gofiber/fiber/v2"
+	"backend/database"
 	"backend/routes"
+	"fmt"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
-	fmt.Println("Start main.go");
+	fmt.Println("Start main.go")
 
-	app := fiber.New();
+	database.Connect()
 
-	routes.SetupApiRoutes(app);
+	app := fiber.New()
 
-	app.Listen(":4000");
+	routes.SetupApiRoutes(app)
+
+	app.Listen(":4000")
 }
