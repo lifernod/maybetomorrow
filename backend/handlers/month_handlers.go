@@ -3,7 +3,9 @@ package handlers
 import "github.com/gofiber/fiber/v2"
 
 func GetMonthById(c *fiber.Ctx) error {
-	return c.SendString("Month get by id")
+	resp := ResponseMonth{}
+	resp.Days = make([][7]ResponseDay, 5);
+	return c.JSON(resp)
 }
 
 func GetDaysByMonthId(c *fiber.Ctx) error {

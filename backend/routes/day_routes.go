@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"backend/handlers"
+	"github.com/gofiber/fiber/v2"
 )
 
 func SetupDayRoutes(day fiber.Router) {
