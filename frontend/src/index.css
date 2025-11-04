@@ -19,5 +19,25 @@
 }
 
 * {
-    @apply antialiased font-noto;
+    @apply antialiased;
+}
+
+body {
+    @apply font-noto;
+}
+
+input,
+textarea{
+    @apply outline-2 outline-table-border focus:outline-primary rounded px-2 py-3 ;
+}
+
+thead td {
+    width: 80px;
+    height: 80px;
+    text-align: center;
+}
+td {
+    width: 100px;
+    height: 100px;
+    text-align: center;
 }
