@@ -7,7 +7,3 @@ func GetMonthById(c *fiber.Ctx) error {
 	resp.Days = make([][7]ResponseDay, 5);
 	return c.JSON(resp)
 }
-
-func GetDaysByMonthId(c *fiber.Ctx) error {
-	return c.SendString("Days get by month id")
-}

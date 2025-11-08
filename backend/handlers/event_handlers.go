@@ -3,9 +3,11 @@ package handlers
 import "github.com/gofiber/fiber/v2"
 
 func GetEventById(c *fiber.Ctx) error {
-	return c.SendString("Event get by id")
+	resp := ResponseEvent{}
+	return c.JSON(resp)
 }
 
 func GetDaysByEventId(c *fiber.Ctx) error {
-	return c.SendString("Days get by event id")
+	resp := [3]ResponseDay{}
+	return c.JSON(resp)
 }
