@@ -5,9 +5,9 @@ import "github.com/google/uuid"
 type DayType string
 
 const (
+	DayUndefined  DayType = "undefined"
 	DayFree       DayType = "free"
 	DayBusy       DayType = "busy"
-	DayUndefined  DayType = "undefined"
 	DayUneditable DayType = "uneditable"
 )
 
@@ -27,10 +27,4 @@ type Day struct {
 	DayID     int     `json:"day_id" db:"day_id"`
 	DayNumber byte    `json:"day_number" db:"day_number"`
 	DayType   DayType `json:"day_type" db:"day_type"`
-}
-
-type Month struct {
-	MonthID     int  `json:"month_id" db:"month_id"`
-	MonthNumber byte `json:"month_number" db:"month_number"`
-	YearNumber  byte `json:"year_number" db:"year_number"`
 }
