@@ -8,7 +8,7 @@ func GetUserById(c *fiber.Ctx) error {
 }
 
 func GetCurrentMonthByUserId(c *fiber.Ctx) error {
-	//UserId := c.Params("user_id")
+	//USER_ID_COOKIE_HEADER := "user_id"
 	resp := ResponseMonth{}
 	resp.Days = make([][7]ResponseDay, 5);
 	return c.JSON(resp)

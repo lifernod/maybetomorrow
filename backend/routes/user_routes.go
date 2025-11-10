@@ -7,5 +7,5 @@ import (
 
 func SetupUserRoutes(user fiber.Router) {
 	user.Get("/getById", handlers.GetUserById)
-	user.Get("/getCurrentMonthById:user_id", handlers.GetCurrentMonthByUserId)
+	user.Get("/getCurrentMonthById", handlers.GetCurrentMonthByUserId)
 }
