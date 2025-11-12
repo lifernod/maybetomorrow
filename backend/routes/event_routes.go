@@ -8,5 +8,5 @@ import (
 func SetupEventRoutes(event fiber.Router) {
 	event.Get("/getById", handlers.GetEventById)
 	event.Get("/getDaysById", handlers.GetDaysByEventId)
-	event.Post("/createEvent", handlers.CreateEvent)
+	event.Post("/create", handlers.CreateEvent)
 }

@@ -11,3 +11,17 @@ func GetEventsByDayId(c *fiber.Ctx) error {
 	resp := [3]ResponseEvent{}
 	return c.JSON(resp)
 }
+func CreateDay(c *fiber.Ctx) error {
+	day := new(ResponseDay)
+
+    if err := c.BodyParser(day); err != nil {
+        return err
+    }
+
+	//id, err := database.CreateDay(day.DayNumber, day.DayType)
+	//if err != nil {
+	//	return fmt.Errorf("Failed to create day %d: %w", id, err)
+	//}
+
+	return c.JSON(day)
+}

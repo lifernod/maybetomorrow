@@ -29,5 +29,5 @@ func CreateEvent(c *fiber.Ctx) error {
 	//	return fmt.Errorf("Failed to create event %d: %w", id, err)
 	//}
 
-	return nil
+	return c.JSON(event)
 }
