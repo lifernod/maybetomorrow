@@ -10,13 +10,15 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func Connection() *pgxpool.Pool {
+var dbpool *pgxpool.Pool
+
+func Connection() {
 	err := godotenv.Load("../.env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
-	dbpool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
+	dbpool, err = pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to create connection pool: %v\n", err)
 		os.Exit(1)
@@ -27,6 +29,9 @@ func Connection() *pgxpool.Pool {
 	}
 
 	fmt.Println("Database connected successfully")
+}
 
+// GetPool Если нужно получить доступ к пулу напрямую (тесты, отладки)
+func GetPool() *pgxpool.Pool {
 	return dbpool
 }

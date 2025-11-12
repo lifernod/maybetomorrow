@@ -3,11 +3,12 @@ package database
 import (
 	"context"
 	"fmt"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateEvent(dbpool *pgxpool.Pool, name string, description string) (int, error) {
+func CreateEvent(name string, description string) (int, error) {
+	if dbpool == nil {
+		return 0, fmt.Errorf("database is not initialized")
+	}
 	ctx := context.Background()
 
 	var EventID int
@@ -23,7 +24,10 @@ func CreateEvent(dbpool *pgxpool.Pool, name string, description string) (int, er
 	return EventID, nil
 }
 
-func CreateDay(dbpool *pgxpool.Pool, number int16, dayType string) (int, error) {
+func CreateDay(number int16, dayType string) (int, error) {
+	if dbpool == nil {
+		return 0, fmt.Errorf("database is not initialized")
+	}
 	ctx := context.Background()
 
 	var DayID int
@@ -40,7 +44,10 @@ func CreateDay(dbpool *pgxpool.Pool, number int16, dayType string) (int, error) 
 	return DayID, nil
 }
 
-func GetEventByID(dbpool *pgxpool.Pool, eventID int) (*Event, error) {
+func GetEventByID(eventID int) (*Event, error) {
+	if dbpool == nil {
+		return nil, fmt.Errorf("database is not initialized")
+	}
 	ctx := context.Background()
 
 	var e Event
@@ -60,7 +67,10 @@ func GetEventByID(dbpool *pgxpool.Pool, eventID int) (*Event, error) {
 	return &e, nil
 }
 
-func GetEventsByDayID(dbpool *pgxpool.Pool, dayID int) ([]Event, error) {
+func GetEventsByDayID(dayID int) ([]Event, error) {
+	if dbpool == nil {
+		return nil, fmt.Errorf("database is not initialized")
+	}
 	ctx := context.Background()
 
 	query := `

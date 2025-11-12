@@ -11,8 +11,8 @@ import (
 func main() {
 	fmt.Println("Start main.go")
 
-	dbpool := database.Connection()
-	defer dbpool.Close()
+	database.Connection()
+	defer database.GetPool().Close()
 
 	app := fiber.New()
 
