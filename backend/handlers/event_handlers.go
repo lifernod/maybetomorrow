@@ -8,6 +8,12 @@ import (
 
 func GetEventById(c *fiber.Ctx) error {
 	event := new(ResponseEvent)
+	//eventId := c.Params("id")
+	//event, err := database.GetEventByID(eventId)
+
+	//if err != nil {
+	//	return fmt.Errorf("Failed to get event %d: %w", eventId, err)
+	//}
 
 	return c.JSON(event)
 }
