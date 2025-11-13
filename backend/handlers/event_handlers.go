@@ -1,19 +1,24 @@
 package handlers
 
 import (
-	//"fmt"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
-	//"backend/database"
+	"backend/database"
+	"strconv"
 )
 
 func GetEventById(c *fiber.Ctx) error {
-	event := new(ResponseEvent)
-	//eventId := c.Params("id")
-	//event, err := database.GetEventByID(eventId)
+	eventId, err1 := strconv.Atoi(c.Params("id"))
 
-	//if err != nil {
-	//	return fmt.Errorf("Failed to get event %d: %w", eventId, err)
-	//}
+	if err1 != nil {
+		return fmt.Errorf("wrong id, cannot convert to int")
+	}
+	
+	event, err2 := database.GetEventByID(eventId)
+
+	if err2 != nil {
+		return fmt.Errorf("failed to get event %d: %w", eventId, err2)
+	}
 
 	return c.JSON(event)
 }
@@ -30,10 +35,10 @@ func CreateEvent(c *fiber.Ctx) error {
         return err
     }
 
-	//id, err := database.CreateEvent(event.EventName, event.EventDescription)
-	//if err != nil {
-	//	return fmt.Errorf("Failed to create event %d: %w", id, err)
-	//}
+	id, err := database.CreateEvent(event.EventName, event.EventDescription)
+	if err != nil {
+		return fmt.Errorf("failed to create event %d: %w", id, err)
+	}
 
 	return c.JSON(event)
 }
