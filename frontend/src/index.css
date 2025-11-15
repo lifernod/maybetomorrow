@@ -37,6 +37,10 @@ textarea {
     @apply w-26 h-26 border border-table-border text-center select-none cursor-pointer hover:border-2 hover:border-primary;
   }
 
+  .mday {
+    @apply h-10 w-10 rounded-full;
+  }
+
   .btn {
     @apply w-full py-3 rounded text-center cursor-pointer text-white;
   }

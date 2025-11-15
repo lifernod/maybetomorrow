@@ -4,7 +4,6 @@ import { Month, MonthInfo } from "$lib/types/month";
 import {
   Accessor,
   createContext,
-  createMemo,
   createSignal,
   JSXElement,
   useContext,

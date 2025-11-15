@@ -1,3 +1,3 @@
 export default function WeekView() {
-  return <h1>Week View</h1>;
+  return <h1></h1>;
 }
