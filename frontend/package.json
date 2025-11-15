@@ -1,6 +1,6 @@
 {
-  "name": "maybetomorrow",
-  "version": "0.0.1",
+  "name": "vite-template-solid",
+  "version": "0.0.0",
   "description": "",
   "type": "module",
   "scripts": {
@@ -12,11 +12,13 @@
   "license": "MIT",
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.13",
+    "@types/node": "^24.10.0",
     "solid-devtools": "^0.34.3",
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2",
     "vite": "^7.1.4",
-    "vite-plugin-solid": "^2.11.8"
+    "vite-plugin-solid": "^2.11.8",
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "dependencies": {
     "solid-js": "^1.9.9"
