@@ -44,6 +44,28 @@ func CreateDay(number int16, dayType string) (int, error) {
 	return DayID, nil
 }
 
+func UpdateEvent(eventID int, name string, description string) error {
+	if dbpool == nil {
+		return fmt.Errorf("database is not initialized")
+	}
+
+	ctx := context.Background()
+
+	_, err := dbpool.Exec(ctx, `
+		UPDATE events
+		SET event_name = $1, 
+		    event_description = $2
+		WHERE event_id = $3;
+	`, name, description, eventID)
+
+	if err != nil {
+		return fmt.Errorf("failed to update event: %w", err)
+	}
+
+	fmt.Printf("Event updated: id=%d, name=%s\n", eventID, name)
+	return nil
+}
+
 func GetEventByID(eventID int) (*Event, error) {
 	if dbpool == nil {
 		return nil, fmt.Errorf("database is not initialized")
@@ -51,7 +73,6 @@ func GetEventByID(eventID int) (*Event, error) {
 	ctx := context.Background()
 
 	var e Event
-
 	err := dbpool.QueryRow(ctx, `
 		select event_id, event_name, event_description
 		from events where event_id=$1;
@@ -98,4 +119,32 @@ func GetEventsByDayID(dayID int) ([]Event, error) {
 	}
 
 	return events, nil
+}
+
+func LinkEventsToDay(dayID int, eventIDs ...int) error {
+	if dbpool == nil {
+		return fmt.Errorf("database is not initialized")
+	}
+
+	if len(eventIDs) == 0 {
+		return fmt.Errorf("no events to link")
+	}
+
+	ctx := context.Background()
+
+	for _, eventID := range eventIDs {
+		_, err := dbpool.Exec(ctx, `
+			INSERT INTO events_to_days (event_id, day_id)
+			VALUES ($1, $2)
+			ON CONFLICT DO NOTHING;
+		`, eventID, dayID)
+
+		if err != nil {
+			return fmt.Errorf("failed to link event %d to day %d: %w", eventID, dayID, err)
+		}
+
+		fmt.Printf("Linked event %d to day %d\n", eventID, dayID)
+	}
+
+	return nil
 }

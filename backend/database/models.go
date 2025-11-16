@@ -22,11 +22,13 @@ type User struct {
 }
 
 type Event struct {
-	EventID          int       `json:"event_id" db:"event_id"`
-	EventName        string    `json:"event_name" db:"event_name"`
-	EventDescription string    `json:"event_description" db:"event_description"`
-	EventStart       time.Time `json:"event_start" db:"event_start"`
-	EventEnd         time.Time `json:"event_end" db:"event_end"`
+	EventID          int    `json:"event_id" db:"event_id"`
+	EventName        string `json:"event_name" db:"event_name"`
+	EventDescription string `json:"event_description" db:"event_description"`
+
+	//!FIXME - time.Time doesn't work
+	EventStart time.Time `json:"event_start" db:"event_start"`
+	EventEnd   time.Time `json:"event_end" db:"event_end"`
 }
 
 type Day struct {
