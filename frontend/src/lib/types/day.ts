@@ -47,6 +47,6 @@ export class Day {
   }
 
   public static async getEvents(dayId: Day["day_id"]): Promise<Event[]> {
-    return [new Event(5, "Hello"), new Event(6, "World", "How are you doing?")];
+    return [];
   }
 }
