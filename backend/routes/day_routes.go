@@ -9,5 +9,5 @@ func SetupDayRoutes(day fiber.Router) {
 	day.Get("/getById", handlers.GetDayById)
 	day.Get("/getEventsById", handlers.GetEventsByDayId)
 	day.Post("/create", handlers.CreateDay)
-	day.Post("linkEventsToDay", handlers.LinkEventsToDay)
+	day.Post("/linkEventsToDay", handlers.LinkEventsToDay)
 }
