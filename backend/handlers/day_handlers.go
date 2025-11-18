@@ -33,3 +33,12 @@ func CreateDay(c *fiber.Ctx) error {
 
 	return c.JSON(day)
 }
+
+func LinkEventsToDay(c *fiber.Ctx) error {
+	eventsToDay := new(ResponseLinkEventsToDay)
+
+    if err := c.BodyParser(eventsToDay); err != nil { return err }
+	if err := database.LinkEventsToDay(eventsToDay.DayId, eventsToDay.EventIDs...); err != nil { return err }
+
+	return nil
+}

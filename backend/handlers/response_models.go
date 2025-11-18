@@ -32,3 +32,8 @@ type ResponseUser struct {
 	Username  string    `json:"username"`
 	PasswordT string    `json:"password_t"`
 }
+
+type ResponseLinkEventsToDay struct {
+	DayId     int     `json:"day_id"`
+	EventIDs  []int   `json:"event_ids"`
+}
