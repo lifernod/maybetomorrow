@@ -1,3 +1,5 @@
+import { Day } from "./day";
+
 export class Event {
   private static readonly DEFAULT_EVENT_ID = -1;
 
@@ -12,7 +14,7 @@ export class Event {
     event_name: string,
     event_description?: string | undefined,
     event_start?: Date | undefined,
-    event_end?: Date | undefined
+    event_end?: Date | undefined,
   ) {
     this.event_id = event_id ?? Event.DEFAULT_EVENT_ID;
     this.event_name = event_name;
@@ -47,5 +49,47 @@ export class Event {
     }
 
     return `${count} событ${suffix}`;
+  }
+
+  public static async getById(eventId: Event["event_id"]): Promise<Event> {
+    const response = await fetch(`/api/event/getById/${eventId}`, {
+      method: "GET",
+    });
+
+    return await response.json();
+  }
+
+  // Get days connected to event
+  public static async getDays(eventId: Event["event_id"]): Promise<Day[]> {
+    const response = await fetch("/api/event/getDaysById", {
+      method: "GET",
+    });
+
+    return await response.json();
+  }
+
+  public static async createEvent(
+    dayId: Day["day_id"],
+    event: Partial<Event>,
+  ): Promise<Event> {
+    const response = await fetch("/api/event/create", {
+      method: "POST",
+      body: JSON.stringify(event),
+    });
+
+    return await response.json();
+  }
+
+  public static async updateEvent(
+    dayId: Day["day_id"],
+    eventId: Event["event_id"],
+    event: Partial<Event>,
+  ): Promise<Event> {
+    const response = await fetch("/api/event/update", {
+      method: "POST",
+      body: JSON.stringify(event),
+    });
+
+    return await response.json();
   }
 }

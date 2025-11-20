@@ -22,7 +22,7 @@ export class Day {
     month_number: number,
     day_type: DayType = DayType.Undefined,
     day_id?: number,
-    events?: Event["event_id"][]
+    events?: Event["event_id"][],
   ) {
     this.day_id = day_id ?? Day.DEFAULT_DAY_ID;
     this.day_number = day_number;
@@ -46,7 +46,47 @@ export class Day {
     return `${this.day_number} ${monthInfo.monthName.not} ${monthInfo.year}`;
   }
 
+  public static async getDayById(): Promise<Day> {
+    const response = await fetch("/api/day/getById", {
+      method: "GET",
+    });
+
+    return await response.json();
+  }
+
+  public static async createDay(day: Day): Promise<Error | undefined> {
+    const response = await fetch("/api/day/create", {
+      method: "POST",
+      body: JSON.stringify(day),
+    });
+
+    if (response.ok) {
+      return;
+    } else {
+      return new Error(response.statusText);
+    }
+  }
+
   public static async getEvents(dayId: Day["day_id"]): Promise<Event[]> {
-    return [new Event(5, "Hello"), new Event(6, "World", "How are you doing?")];
+    const response = await fetch(`/api/day/getEventsById/${dayId}`, {
+      method: "GET",
+    });
+
+    const json = (await response.json()) as { events: Event[] };
+    return json.events;
+  }
+
+  public static async linkEventsToDay(
+    dayId: Day["day_id"],
+    eventIds: Event["event_id"][],
+  ): Promise<Error | undefined> {
+    const response = await fetch("/api/day/linkEventsToDay", {
+      method: "POST",
+      body: JSON.stringify({ day_id: dayId, event_ids: eventIds }),
+    });
+
+    if (!response.ok) {
+      return new Error(response.statusText);
+    }
   }
 }
