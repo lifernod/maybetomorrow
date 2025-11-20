@@ -28,9 +28,9 @@ func CreateEvent(c *fiber.Ctx) error {
 
     if err := c.BodyParser(event); err != nil { return err }
 
-	_, err := database.CreateEvent(event.EventName, event.EventDescription)
+	id, err := database.CreateEvent(event.EventName, event.EventDescription)
 	if err != nil { return err }
-
+	event.EventID = id
 	return c.JSON(event)
 }
 

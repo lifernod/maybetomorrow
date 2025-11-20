@@ -28,9 +28,9 @@ func CreateDay(c *fiber.Ctx) error {
 
     if err := c.BodyParser(day); err != nil { return err }
 
-	_, err := database.CreateDay(int16(day.DayNumber), string(day.DayType))
+	id, err := database.CreateDay(int16(day.DayNumber), string(day.DayType))
 	if err != nil { return err }
-
+	day.DayID = id
 	return c.JSON(day)
 }
 
