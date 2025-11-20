@@ -7,11 +7,6 @@ type EventsToDay struct {
 	DayID   int `json:"day_id" db:"day_id"`
 }
 
-type DaysToMonths struct {
-	DayID   int `json:"day_id" db:"day_id"`
-	MonthID int `json:"month_id" db:"month_id"`
-}
-
 type UsersToMonths struct {
 	UserID  uuid.UUID `json:"user_id" db:"user_id"`
 	MonthID int       `json:"month_id" db:"month_id"`

@@ -2,35 +2,36 @@ package database
 
 import (
 	"context"
-	_ "database/sql"
 	"fmt"
 	"log"
 	"os"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
 
-func Connect() {
-	envErr := godotenv.Load()
-	if envErr != nil {
+var dbpool *pgxpool.Pool
+
+func Connection() {
+	err := godotenv.Load("../.env")
+	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
-	DATABASE_URL := os.Getenv("DATABASE_URL")
-	conn, err := pgx.Connect(context.Background(), DATABASE_URL)
+	dbpool, err = pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
-	}
-	defer conn.Close(context.Background())
-
-	var greeting string
-	err = conn.QueryRow(context.Background(), "select 'Hello, world!'").Scan(&greeting)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Unable to create connection pool: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println(greeting)
+	if err := CreateSchema(dbpool); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Database connected successfully")
+}
+
+// GetPool Если нужно получить доступ к пулу напрямую (тесты, отладки)
+func GetPool() *pgxpool.Pool {
+	return dbpool
 }

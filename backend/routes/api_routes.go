@@ -7,6 +7,5 @@ func SetupApiRoutes(app *fiber.App) {
 
 	SetupEventRoutes(api.Group("/event"))
 	SetupDayRoutes(api.Group("/day"))
-	SetupMonthRoutes(api.Group("/month"))
 	SetupUserRoutes(api.Group("/user"))
 }
