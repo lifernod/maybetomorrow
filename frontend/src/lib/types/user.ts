@@ -17,14 +17,14 @@ export class User {
     this.user_id = user_id;
     this.username = username;
     if (needToHash) {
-      this.password_t = bcrypt.hashSync(password_t, 10);
+      bcrypt.hash(password_t, 10).then((p) => (this.password_t = p));
     } else {
       this.password_t = password_t;
     }
   }
 
   public static async getUser(userId: User["user_id"]): Promise<User> {
-    const response = await fetch("/api/user/getById", {
+    const response = await fetch("http://localhost:4000/api/user/getById", {
       method: "GET",
     });
 
@@ -32,7 +32,7 @@ export class User {
   }
 
   public static async getCurrentMonth(userId: User["user_id"]): Promise<Month> {
-    const response = await fetch("/api/user/getCurrentMonthById", {
+    const response = await fetch("http://localhost:4000/api/user/getCurrentMonthById", {
       method: "GET",
     });
 

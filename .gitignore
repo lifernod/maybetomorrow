@@ -31,3 +31,7 @@ go.work.sum
 .idea/
 idea/
 .vscode/
+
+# node_modules
+node_modules/
+.svelte-kit/

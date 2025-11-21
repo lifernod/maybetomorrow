@@ -22,13 +22,13 @@ export class Day {
     month_number: number,
     day_type: DayType = DayType.Undefined,
     day_id?: number,
-    events?: Event["event_id"][],
+    events?: Event["event_id"][] | null,
   ) {
     this.day_id = day_id ?? Day.DEFAULT_DAY_ID;
     this.day_number = day_number;
     this.month_number = month_number;
     this.day_type = day_type;
-    this.events = events ?? [];
+    this.events = (events === null || events === undefined) ? [] : [];
   }
 
   public static readonly weekDays = [
