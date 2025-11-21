@@ -1,0 +1,79 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap");
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+* {
+    @apply antialiased;
+}
+
+body {
+    @apply font-noto;
+}
+
+input,
+textarea {
+    @apply outline outline-gray-200 focus:outline-primary rounded p-2;
+}
+
+@theme {
+    --font-noto: "Noto Sans", sans-serif;
+    --font-alternates: "Montserrat Alternates", sans-serif;
+
+    --color-primary: #ff6900;
+
+    /*Table colors*/
+    --color-table-busy: #ffb86a;
+    --color-table-free: #a9ff96;
+    --color-table-undefined: #fffaf4;
+    --color-table-border: rgba(255, 105, 0, 0.1);
+    --color-table-uneditable: #d4d4d8;
+}
+
+@utility header-link {
+    @apply py-1 px-5 first:rounded-l last:rounded-r border-r last:border-r-0 border-gray-200 hover:text-primary;
+}
+
+@layer components {
+    .day {
+        @apply w-26 h-26 border border-table-border text-center select-none cursor-pointer hover:border-2 hover:border-primary;
+    }
+
+    .btn {
+        @apply py-3 rounded text-center cursor-pointer text-white;
+    }
+
+    .input {
+        @apply w-full focus:outline-primary;
+    }
+}
+
+@layer utilities {
+    .day-undefined {
+        @apply bg-table-undefined;
+    }
+
+    .day-today {
+        @apply border-2 border-primary;
+    }
+
+    .day-uneditable {
+        @apply bg-table-uneditable cursor-default hover:border-none;
+    }
+
+    .day-free {
+        @apply bg-table-free;
+    }
+
+    .day-busy {
+        @apply bg-table-busy;
+    }
+
+    .btn-primary {
+        @apply bg-primary;
+    }
+
+    .btn-gray {
+        @apply bg-gray-500;
+    }
+}
