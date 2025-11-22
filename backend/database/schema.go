@@ -12,33 +12,32 @@ import (
 func CreateSchema(dbpool *pgxpool.Pool) error {
 	ctx := context.Background()
 
-	_, err := dbpool.Exec(ctx, `create extension if not exists "pgcrypto";`)
+	_, err := dbpool.Exec(ctx, `CREATE EXTENSION IF NOT EXISTS "pgcrypto";`)
 	if err != nil {
 		return fmt.Errorf("failed to create extension: %w", err)
 	}
 
 	_, err = dbpool.Exec(ctx, `
-	create table if not exists users (
-		user_id uuid primary key default gen_random_uuid(),
-		username varchar(255) unique not null,
-		user_password varchar(32) not null
+	CREATE TABLE IF NOT EXISTS users (
+		username VARCHAR(125) PRIMARY KEY UNIQUE NOT NULL,
+		password_hash VARCHAR(32) NOT NULL
 	);`)
 	if err != nil {
 		return fmt.Errorf("failed to create users table: %w", err)
 	}
 
 	_, err = dbpool.Exec(ctx, `
-	create table if not exists events (
-		event_id serial primary key,
-		event_name varchar(125) not null,
-		event_description varchar(1024)
+	CREATE TABLE IF NOT EXISTS events (
+		event_id SERIAL PRIMARY KEY,
+		event_name VARCHAR(125) NOT NULL,
+		event_description VARCHAR(1024)
 	);`)
 	if err != nil {
 		return fmt.Errorf("failed to create events table: %w", err)
 	}
 
 	_, err = dbpool.Exec(ctx, `
-	create type e_day_type as enum ('undefined', 'free', 'busy', 'uneditable');
+	CREATE TYPE e_day_type AS ENUM ('undefined', 'free', 'busy', 'uneditable');
 	`)
 	if err != nil {
 		var pgErr *pgconn.PgError
@@ -52,25 +51,48 @@ func CreateSchema(dbpool *pgxpool.Pool) error {
 	}
 
 	_, err = dbpool.Exec(ctx, `
-	create table if not exists days (
-		day_id serial primary key,
-		day_number smallint not null default 1,
-		day_type e_day_type default 'undefined'
+	CREATE TABLE IF NOT EXISTS days (
+		day_id SERIAL PRIMARY KEY,
+		day_number SMALLINT NOT NULL DEFAULT 1,
+		day_type e_day_type DEFAULT 'undefined'
 	);`)
 	if err != nil {
 		return fmt.Errorf("failed to create days table: %w", err)
 	}
 
 	_, err = dbpool.Exec(ctx, `
-	create table if not exists events_to_days (
-		event_id int,
-		day_id int,
-		primary key (event_id, day_id),
-		constraint fk_event foreign key (event_id) references events(event_id),
-		constraint fk_day foreign key (day_id) references days(day_id)
+	CREATE TABLE IF NOT EXISTS events_to_days (
+		event_id INT NOT NULL,
+		day_id INT NOT NULL,
+		PRIMARY KEY (event_id, day_id),
+		CONSTRAINT fk_event FOREIGN KEY (event_id) REFERENCES events(event_id),
+		CONSTRAINT fk_day FOREIGN KEY (day_id) REFERENCES days(day_id)
 	);`)
 	if err != nil {
 		return fmt.Errorf("failed to create events_to_days table: %w", err)
+	}
+
+	_, err = dbpool.Exec(ctx, `
+	CREATE TABLE IF NOT EXISTS days_to_users (
+	    username VARCHAR(125) NOT NULL,
+	    day_id INT NOT NULL,
+	    PRIMARY KEY (username, day_id),
+	    CONSTRAINT fk_username FOREIGN KEY (username) REFERENCES users(username),
+	    CONSTRAINT fk_day FOREIGN KEY (day_id) REFERENCES days(day_id)
+	);`)
+	if err != nil {
+		return fmt.Errorf("failed to create events_to_users table: %w", err)
+	}
+
+	_, err = dbpool.Exec(ctx, `
+	CREATE TABLE IF NOT EXISTS rooms(
+	    roomID TEXT PRIMARY KEY UNIQUE NOT NULL,
+	    day_number SMALLINT[] NOT NULL,
+	    month_number SMALLINT[] NOT NULL
+	);`)
+	if err != nil {
+		return fmt.Errorf("failed to create rooms table: %w", err)
+
 	}
 
 	return nil

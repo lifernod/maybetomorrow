@@ -3,15 +3,14 @@ package handlers
 import (
 	"github.com/google/uuid"
 	"backend/database"
-	"time"
 )
 
 type ResponseEvent struct {
 	EventID          int       `json:"event_id"`
 	EventName        string    `json:"event_name"`
 	EventDescription string    `json:"event_description"`
-	StartTime        time.Time `json:"start_time"`
-	EndTime          time.Time `json:"end_time"`
+	StartTime        string    `json:"start_time"`
+	EndTime          string    `json:"end_time"`
 }
 
 type ResponseDay struct {

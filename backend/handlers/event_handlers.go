@@ -7,13 +7,11 @@ import (
 )
 
 func GetEventById(c *fiber.Ctx) error {
-	eventId, err1 := strconv.Atoi(c.Params("id"))
-
-	if err1 != nil { return err1 }
+	eventId, err := strconv.Atoi(c.Params("id"))
+	if err != nil { return err }
 	
-	event, err2 := database.GetEventByID(eventId)
-
-	if err2 != nil { return err2 }
+	event, err := database.GetEventByID(eventId)
+	if err != nil { return err }
 
 	return c.JSON(event)
 }
@@ -31,6 +29,7 @@ func CreateEvent(c *fiber.Ctx) error {
 	id, err := database.CreateEvent(event.EventName, event.EventDescription)
 	if err != nil { return err }
 	event.EventID = id
+	
 	return c.JSON(event)
 }
 

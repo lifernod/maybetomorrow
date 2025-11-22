@@ -5,23 +5,40 @@ import (
 	"fmt"
 )
 
+func CreateUser(username string, passwordHash string) error {
+	if dbpool == nil {
+		return fmt.Errorf("database is not initialized")
+	}
+
+	ctx := context.Background()
+
+	_, err := dbpool.Exec(ctx, `
+	INSERT INTO users (username, password_hash) 
+	VALUES ($1, $2) 
+	ON CONFLICT DO NOTHING;
+	`, username, passwordHash)
+
+	return err
+}
+
 func CreateEvent(name string, description string) (int, error) {
 	if dbpool == nil {
 		return 0, fmt.Errorf("database is not initialized")
 	}
 	ctx := context.Background()
 
-	var EventID int
+	var Username int
 	err := dbpool.QueryRow(ctx, `
-		insert into events (event_name, event_description)
-		values ($1, $2)
-		returning event_id;
-		`, name, description).Scan(&EventID)
+		INSERT INTO events (event_name, event_description)
+		VALUES ($1, $2)
+		RETURNING event_id;
+		`, name, description).Scan(&Username)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create event: %w", err)
 	}
-	fmt.Printf("Event created: id=%d, name=%s\n:", EventID, name)
-	return EventID, nil
+	fmt.Printf("Event created: id=%d, name=%s\n:", Username, name)
+
+	return Username, nil
 }
 
 func CreateDay(number int16, dayType string) (int, error) {
@@ -32,16 +49,33 @@ func CreateDay(number int16, dayType string) (int, error) {
 
 	var DayID int
 	err := dbpool.QueryRow(ctx, `
-		insert into days (day_number, day_type)
-		values ($1, $2)
-		returning day_id;
+		INSERT INTO days (day_number, day_type)
+		VALUES ($1, $2)
+		RETURNING day_id;
 		`, number, dayType).Scan(&DayID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create day: %w", err)
 	}
 
 	fmt.Printf("Day created: id=%d, number=%d, type=%s\n", DayID, number, dayType)
+
 	return DayID, nil
+}
+
+func CreateRoom(roomID string, dayNumber []int, monthNumber []int) error {
+	if dbpool == nil {
+		return fmt.Errorf("database is not initialized")
+	}
+
+	ctx := context.Background()
+
+	_, err := dbpool.Exec(ctx, `
+	INSERT INTO rooms (roomID, day_number, month_number)
+	VALUES ($1, $2, $3)
+	ON CONFLICT DO NOTHING;
+	`, roomID, dayNumber, monthNumber)
+
+	return err
 }
 
 func UpdateEvent(eventID int, name string, description string) error {
@@ -63,6 +97,7 @@ func UpdateEvent(eventID int, name string, description string) error {
 	}
 
 	fmt.Printf("Event updated: id=%d, name=%s\n", eventID, name)
+
 	return nil
 }
 
@@ -74,8 +109,8 @@ func GetEventByID(eventID int) (*Event, error) {
 
 	var e Event
 	err := dbpool.QueryRow(ctx, `
-		select event_id, event_name, event_description
-		from events where event_id=$1;
+		SELECT event_id, event_name, event_description
+		FROM events WHERE event_id=$1;
 		`, eventID).Scan(&e.EventID, &e.EventName, &e.EventDescription)
 
 	if err != nil {
