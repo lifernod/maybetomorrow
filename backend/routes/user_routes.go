@@ -8,4 +8,5 @@ import (
 func SetupUserRoutes(user fiber.Router) {
 	user.Get("/getById", handlers.GetUserById)
 	user.Get("/getCurrentMonthById", handlers.GetCurrentMonthByUserId)
+	user.Post("/create", handlers.CreateUser)
 }

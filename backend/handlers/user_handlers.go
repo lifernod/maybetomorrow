@@ -16,8 +16,8 @@ func GetUserById(c *fiber.Ctx) error {
 func GetCurrentMonthByUserId(c *fiber.Ctx) error {
 	//USER_ID_COOKIE_HEADER := "user_id"
 	yearMonth := new(struct {
-		Year   int    `json:"year"`
-		Month  int    `json:"month"`
+		Year   int    `json:"year_number"`
+		Month  int    `json:"month_number"`
 	})
 	if err := c.BodyParser(yearMonth); err != nil { return err }
 	var month string
@@ -66,4 +66,16 @@ func GetCurrentMonthByUserId(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(resp)
+}
+
+func CreateUser(c *fiber.Ctx) error {
+	userData := new(struct {
+		Username       string   `json:"username"`
+		PasswordHash   string   `json:"password_hash"`
+	})
+	if err := c.BodyParser(userData); err != nil { return err }
+
+	if err := database.CreateUser(userData.Username, userData.PasswordHash); err != nil { return err }
+
+	return nil
 }
