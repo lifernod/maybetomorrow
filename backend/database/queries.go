@@ -3,7 +3,10 @@ package database
 import (
 	"context"
 	"fmt"
+	"time"
 )
+
+const timeLayout = "2006-01-02 15:04:05"
 
 func CreateUser(username string, passwordHash string) error {
 	if dbpool == nil {
@@ -21,24 +24,38 @@ func CreateUser(username string, passwordHash string) error {
 	return err
 }
 
-func CreateEvent(name string, description string) (int, error) {
+func CreateEvent(name string, description string, start string, end *string) (int, error) {
 	if dbpool == nil {
 		return 0, fmt.Errorf("database is not initialized")
 	}
 	ctx := context.Background()
 
-	var Username int
-	err := dbpool.QueryRow(ctx, `
-		INSERT INTO events (event_name, event_description)
-		VALUES ($1, $2)
+	startTime, err := time.Parse(timeLayout, start)
+	if err != nil {
+		return 0, fmt.Errorf("invalid start time format: %w", err)
+	}
+
+	var endTime *time.Time
+	if end != nil {
+		t, err := time.Parse(timeLayout, *end)
+		if err != nil {
+			return 0, fmt.Errorf("invalid end time format: %w", err)
+		}
+		endTime = &t
+	}
+
+	var eventID int
+	err = dbpool.QueryRow(ctx, `
+		INSERT INTO events (event_name, event_description, event_start, event_end)
+		VALUES ($1, $2, $3, $4)
 		RETURNING event_id;
-		`, name, description).Scan(&Username)
+		`, name, description, startTime, endTime).Scan(&eventID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create event: %w", err)
 	}
-	fmt.Printf("Event created: id=%d, name=%s\n:", Username, name)
 
-	return Username, nil
+	fmt.Printf("Event created: id=%d, name=%s\n:", eventID, name)
+	return eventID, nil
 }
 
 func CreateDay(number int16, dayType string) (int, error) {
@@ -58,7 +75,6 @@ func CreateDay(number int16, dayType string) (int, error) {
 	}
 
 	fmt.Printf("Day created: id=%d, number=%d, type=%s\n", DayID, number, dayType)
-
 	return DayID, nil
 }
 
@@ -78,26 +94,40 @@ func CreateRoom(roomID string, dayNumber []int, monthNumber []int) error {
 	return err
 }
 
-func UpdateEvent(eventID int, name string, description string) error {
+func UpdateEvent(eventID int, name string, description string, start string, end *string) error {
 	if dbpool == nil {
 		return fmt.Errorf("database is not initialized")
 	}
-
 	ctx := context.Background()
 
-	_, err := dbpool.Exec(ctx, `
+	startTime, err := time.Parse(timeLayout, start)
+	if err != nil {
+		return fmt.Errorf("invalid start time format: %w", err)
+	}
+
+	var endTime *time.Time
+	if end != nil {
+		t, err := time.Parse(timeLayout, *end)
+		if err != nil {
+			return fmt.Errorf("invalid end time format: %w", err)
+		}
+		endTime = &t
+	}
+
+	_, err = dbpool.Exec(ctx, `
 		UPDATE events
 		SET event_name = $1, 
-		    event_description = $2
-		WHERE event_id = $3;
-	`, name, description, eventID)
+		    event_description = $2,
+		    event_start = $3,
+		    event_end = $4
+		WHERE event_id = $5;
+	`, name, description, startTime, endTime, eventID)
 
 	if err != nil {
 		return fmt.Errorf("failed to update event: %w", err)
 	}
 
 	fmt.Printf("Event updated: id=%d, name=%s\n", eventID, name)
-
 	return nil
 }
 
@@ -108,16 +138,27 @@ func GetEventByID(eventID int) (*Event, error) {
 	ctx := context.Background()
 
 	var e Event
+	var startTime time.Time
+	var endTime *time.Time
+
 	err := dbpool.QueryRow(ctx, `
-		SELECT event_id, event_name, event_description
+		SELECT event_id, event_name, event_description, event_start, event_end
 		FROM events WHERE event_id=$1;
-		`, eventID).Scan(&e.EventID, &e.EventName, &e.EventDescription)
+		`, eventID).Scan(&e.EventID, &e.EventName, &e.EventDescription, &startTime, &endTime)
 
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return nil, nil
 		}
 		return nil, fmt.Errorf("failed to get event: %w", err)
+	}
+
+	e.EventStart = startTime.Format(timeLayout)
+	if endTime != nil {
+		str := endTime.Format(timeLayout)
+		e.EventEnd = &str
+	} else {
+		e.EventEnd = nil
 	}
 
 	return &e, nil
@@ -130,7 +171,7 @@ func GetEventsByDayID(dayID int) ([]Event, error) {
 	ctx := context.Background()
 
 	query := `
-		SELECT e.event_id, e.event_name, e.event_description
+		SELECT e.event_id, e.event_name, e.event_description, e.event_start, e.event_end
 		FROM events e
 		JOIN events_to_days ed ON e.event_id = ed.event_id
 		WHERE ed.day_id = $1;
@@ -145,9 +186,19 @@ func GetEventsByDayID(dayID int) ([]Event, error) {
 	var events []Event
 	for rows.Next() {
 		var e Event
-		err := rows.Scan(&e.EventID, &e.EventName, &e.EventDescription)
+		var startTime time.Time
+		var endTime *time.Time
+		err := rows.Scan(&e.EventID, &e.EventName, &e.EventDescription, &startTime, &endTime)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan event: %w", err)
+		}
+
+		e.EventStart = startTime.Format(timeLayout)
+		if endTime != nil {
+			str := endTime.Format(timeLayout)
+			e.EventEnd = &str
+		} else {
+			e.EventEnd = nil
 		}
 
 		events = append(events, e)
