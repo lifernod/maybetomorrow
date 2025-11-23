@@ -233,4 +233,3 @@ func LinkUserToRoom(username string, roomID string) error {
 	fmt.Printf("User %s added to room %s\n", username, roomID)
 	return nil
 }
-"backend. Feat: добавлены функции "получение всех дней для заданного пользователя за заданный месяц и линковка пользователя к комнате
