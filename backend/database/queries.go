@@ -133,7 +133,8 @@ func GetEventsByDayID(dayID int) ([]Event, error) {
 		SELECT e.event_id, e.event_name, e.event_description
 		FROM events e
 		JOIN events_to_days ed ON e.event_id = ed.event_id
-		WHERE ed.day_id = $1;`
+		WHERE ed.day_id = $1;
+	`
 
 	rows, err := dbpool.Query(ctx, query, dayID)
 	if err != nil {
@@ -156,15 +157,44 @@ func GetEventsByDayID(dayID int) ([]Event, error) {
 	return events, nil
 }
 
+func GetUserDaysByMonth(username string, month int) ([]Day, error) {
+	if dbpool == nil {
+		return nil, fmt.Errorf("database is not initialized")
+	}
+	ctx := context.Background()
+
+	query := `
+		SELECT d.day_id, d.day_number, d.month_number, d.day_type
+		FROM days d
+		JOIN days_to_users du ON d.day_id = du.day_id
+		WHERE du.username = $1 AND d.month_number = $2;
+	`
+
+	rows, err := dbpool.Query(ctx, query, username, month)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get days: %w", err)
+	}
+	defer rows.Close()
+
+	var result []Day
+	for rows.Next() {
+		var day Day
+		if err := rows.Scan(&day.DayID, &day.DayNumber, &day.MonthNumber, &day.DayType); err != nil {
+			return nil, fmt.Errorf("failed to scan row: %w", err)
+		}
+		result = append(result, day)
+	}
+
+	return result, nil
+}
+
 func LinkEventsToDay(dayID int, eventIDs ...int) error {
 	if dbpool == nil {
 		return fmt.Errorf("database is not initialized")
 	}
-
 	if len(eventIDs) == 0 {
 		return fmt.Errorf("no events to link")
 	}
-
 	ctx := context.Background()
 
 	for _, eventID := range eventIDs {
@@ -183,3 +213,24 @@ func LinkEventsToDay(dayID int, eventIDs ...int) error {
 
 	return nil
 }
+
+func LinkUserToRoom(username string, roomID string) error {
+	if dbpool == nil {
+		return fmt.Errorf("database is not initialized")
+	}
+	ctx := context.Background()
+
+	_, err := dbpool.Exec(ctx, `
+		INSERT INTO users_to_rooms (username, roomID)
+		VALUES ($1, $2)
+		ON CONFLICT DO NOTHING;
+	`, username, roomID)
+
+	if err != nil {
+		return fmt.Errorf("failed to add user to room: %w", err)
+	}
+
+	fmt.Printf("User %s added to room %s\n", username, roomID)
+	return nil
+}
+"backend. Feat: добавлены функции "получение всех дней для заданного пользователя за заданный месяц и линковка пользователя к комнате

@@ -18,6 +18,20 @@ func CreateSchema(dbpool *pgxpool.Pool) error {
 	}
 
 	_, err = dbpool.Exec(ctx, `
+	CREATE TYPE e_day_type AS ENUM ('undefined', 'free', 'busy', 'uneditable');
+	`)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			if pgErr.Code != "42710" { // 42710 = duplicate_object
+				return fmt.Errorf("failed to create enum type: %w", err)
+			}
+		} else {
+			return fmt.Errorf("failed to create enum type, dupe: %w", err)
+		}
+	}
+
+	_, err = dbpool.Exec(ctx, `
 	CREATE TABLE IF NOT EXISTS users (
 		username VARCHAR(125) PRIMARY KEY UNIQUE NOT NULL,
 		password_hash VARCHAR(32) NOT NULL
@@ -37,23 +51,10 @@ func CreateSchema(dbpool *pgxpool.Pool) error {
 	}
 
 	_, err = dbpool.Exec(ctx, `
-	CREATE TYPE e_day_type AS ENUM ('undefined', 'free', 'busy', 'uneditable');
-	`)
-	if err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) {
-			if pgErr.Code != "42710" { // 42710 = duplicate_object
-				return fmt.Errorf("failed to create enum type: %w", err)
-			}
-		} else {
-			return fmt.Errorf("failed to create enum type, dupe: %w", err)
-		}
-	}
-
-	_, err = dbpool.Exec(ctx, `
 	CREATE TABLE IF NOT EXISTS days (
 		day_id SERIAL PRIMARY KEY,
 		day_number SMALLINT NOT NULL DEFAULT 1,
+		month_number SMALLINT NOT NULL DEFAULT 1,
 		day_type e_day_type DEFAULT 'undefined'
 	);`)
 	if err != nil {
@@ -95,5 +96,16 @@ func CreateSchema(dbpool *pgxpool.Pool) error {
 
 	}
 
+	_, err = dbpool.Exec(ctx, `
+	CREATE TABLE IF NOT EXISTS users_to_rooms (
+	    username VARCHAR(125) NOT NULL,
+	    roomID TEXT NOT NULL,
+	    PRIMARY KEY (username, roomID),
+	    CONSTRAINT fk_user FOREIGN KEY (username) REFERENCES users(username),
+	    CONSTRAINT fk_room FOREIGN KEY (roomID) REFERENCES rooms(roomID)
+	);`)
+	if err != nil {
+		return fmt.Errorf("failed to create users_to_rooms table: %w", err)
+	}
 	return nil
 }
