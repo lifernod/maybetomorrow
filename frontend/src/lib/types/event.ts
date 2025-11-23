@@ -10,11 +10,11 @@ export class Event {
   public event_end?: Date | undefined;
 
   constructor(
-    event_id: number,
     event_name: string,
+    event_id?: number,
     event_description?: string | undefined,
     event_start?: Date | undefined,
-    event_end?: Date | undefined,
+    event_end?: Date | undefined
   ) {
     this.event_id = event_id ?? Event.DEFAULT_EVENT_ID;
     this.event_name = event_name;
@@ -60,7 +60,7 @@ export class Event {
   }
 
   // Get days connected to event
-  public static async getDays(eventId: Event["event_id"]): Promise<Day[]> {
+  public static async getDays(): Promise<Day[]> {
     const response = await fetch("/api/event/getDaysById", {
       method: "GET",
     });
@@ -70,7 +70,7 @@ export class Event {
 
   public static async createEvent(
     dayId: Day["day_id"],
-    event: Partial<Event>,
+    event: Partial<Event>
   ): Promise<Event> {
     const response = await fetch("/api/event/create", {
       method: "POST",
@@ -83,7 +83,7 @@ export class Event {
   public static async updateEvent(
     dayId: Day["day_id"],
     eventId: Event["event_id"],
-    event: Partial<Event>,
+    event: Partial<Event>
   ): Promise<Event> {
     const response = await fetch("/api/event/update", {
       method: "POST",

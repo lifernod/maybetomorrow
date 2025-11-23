@@ -1,10 +1,9 @@
 import { Event } from "$lib/types/event";
+import type { EventTime } from "./eventTime";
 
 export type VisualEvent = Event & {
-  startHour: number;
-  endHour: number;
-  startMinutes: number;
-  endMinutes: number;
+  time: EventTime;
+
   color: string;
   column: number;
   totalColumns: number;
@@ -27,12 +26,15 @@ export const EVENT_COLORS = [
 
 const eventsOverlap = (event1: VisualEvent, event2: VisualEvent): boolean => {
   return !(
-    event1.endHour < event2.startHour || event2.endHour < event1.startHour
+    event1.time.end.hours < event2.time.start.hours ||
+    event2.time.end.hours < event1.time.start.hours
   );
 };
 
 const assignEventColumns = (events: VisualEvent[]): VisualEvent[] => {
-  const sortedEvents = [...events].sort((a, b) => a.startHour - b.startHour);
+  const sortedEvents = [...events].sort(
+    (a, b) => a.time.start.hours - b.time.start.hours
+  );
   const columns: VisualEvent[][] = [];
 
   sortedEvents.forEach((event) => {
@@ -69,10 +71,16 @@ export const calculateVisualEvents = (events: Event[]): VisualEvent[] => {
       if (!event.event_start || !event.event_end) {
         return {
           ...event,
-          startHour: 8,
-          endHour: 9,
-          startMinutes: 0,
-          endMinutes: 0,
+          time: {
+            start: {
+              hours: 8,
+              minutes: 0,
+            },
+            end: {
+              hours: 9,
+              minutes: 0,
+            },
+          },
           color: EVENT_COLORS[index % EVENT_COLORS.length],
           column: 0,
           totalColumns: 1,
@@ -88,10 +96,16 @@ export const calculateVisualEvents = (events: Event[]): VisualEvent[] => {
 
       return {
         ...event,
-        startHour,
-        endHour,
-        startMinutes,
-        endMinutes,
+        time: {
+          start: {
+            hours: startHour,
+            minutes: startMinutes,
+          },
+          end: {
+            hours: endHour,
+            minutes: endMinutes,
+          },
+        },
         color: EVENT_COLORS[index % EVENT_COLORS.length],
         column: 0,
         totalColumns: 1,
@@ -121,13 +135,13 @@ export const calculateVisualEvents = (events: Event[]): VisualEvent[] => {
 };
 
 export const getEventHeight = (event: VisualEvent): number => {
-  const hoursDiff = event.endHour - event.startHour;
-  const minutesDiff = event.endMinutes - event.startMinutes;
+  const hoursDiff = event.time.end.hours - event.time.start.hours;
+  const minutesDiff = event.time.end.minutes - event.time.start.minutes;
   return hoursDiff * 80 + minutesDiff - 8;
 };
 
 export const getEventTop = (event: VisualEvent): number => {
-  const startHourOffset = event.startHour - 8;
-  const startMinutesOffset = event.startMinutes;
+  const startHourOffset = event.time.start.hours - 8;
+  const startMinutesOffset = event.time.start.minutes;
   return startHourOffset * 80 + startMinutesOffset + 4;
 };

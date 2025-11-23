@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Day } from "$lib/types/day";
   import { Event } from "$lib/types/event";
-  import { getDayInfo } from "$lib/utils/events/dateUtils";
   import {
     calculateVisualEvents,
     type VisualEvent,
@@ -18,7 +17,7 @@
 
   const { day, onCreateEvent, onClose }: Props = $props();
 
-  const dayInfo = getDayInfo(day);
+  const dayInfo = Day.getDayInfo(day);
 
   let newEvents = $state<Partial<Event>[]>([]);
   let visualEvents = $state<VisualEvent[]>([]);
@@ -33,12 +32,12 @@
     isAddingEvent = true;
   };
 
-  const saveNewEvent = (event: Partial<Event>) => {
+  const onSave = (event: Partial<Event>) => {
     newEvents.push(event);
     isAddingEvent = false;
   };
 
-  const cancelNewEvent = () => {
+  const onCancel = () => {
     isAddingEvent = false;
   };
 
@@ -83,11 +82,9 @@
       </div>
 
       <!-- Event Form -->
-      <EventForm
-        isOpen={isAddingEvent}
-        onSave={saveNewEvent}
-        onCancel={cancelNewEvent}
-      />
+      {#key isAddingEvent}
+        <EventForm {onSave} {onCancel} />
+      {/key}
 
       <!-- New Events List -->
       <NewEventsList events={newEvents} onRemove={removeNewEvent} />

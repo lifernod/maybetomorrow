@@ -1,8 +1,13 @@
 <script lang="ts">
   import { Event } from "$lib/types/event";
+  import { formatDateTime } from "$lib/utils/events/eventTime";
 
-  export let events: Partial<Event>[] = [];
-  export let onRemove: (eventId: number) => void;
+  type Props = {
+    events: Partial<Event>[];
+    onRemove: (eventId: Event["event_id"]) => void;
+  };
+
+  const { events = [], onRemove }: Props = $props();
 </script>
 
 {#if events.length > 0}
@@ -22,17 +27,13 @@
                 </p>
               {/if}
               <p class="text-xs text-gray-500 mt-1">
-                {event.event_start?.toLocaleTimeString("ru-RU", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })} - {event.event_end?.toLocaleTimeString("ru-RU", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+                {formatDateTime(event.event_start)} - {formatDateTime(
+                  event.event_end
+                )}
               </p>
             </div>
             <button
-              onclick={() => event.event_id && onRemove(event.event_id!)}
+              onclick={() => onRemove(event.event_id!)}
               class="text-red-500 hover:text-red-700 text-sm"
             >
               Удалить
