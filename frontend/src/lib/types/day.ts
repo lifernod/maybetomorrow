@@ -22,13 +22,13 @@ export class Day {
     month_number: number,
     day_type: DayType = DayType.Undefined,
     day_id?: number,
-    events?: Event["event_id"][] | null,
+    events?: Event["event_id"][] | null
   ) {
     this.day_id = day_id ?? Day.DEFAULT_DAY_ID;
     this.day_number = day_number;
     this.month_number = month_number;
     this.day_type = day_type;
-    this.events = (events === null || events === undefined) ? [] : [];
+    this.events = events === null || events === undefined ? [] : [];
   }
 
   public static readonly weekDays = [
@@ -41,9 +41,9 @@ export class Day {
     "Вс",
   ] as const;
 
-  public getDayInfo(): string {
-    const monthInfo = Month.getMonthInfo(this.month_number);
-    return `${this.day_number} ${monthInfo.monthName.not} ${monthInfo.year}`;
+  public static getDayInfo(day: Day): string {
+    const monthInfo = Month.getMonthInfo(day.month_number);
+    return `${day.day_number} ${monthInfo.monthName.not} ${monthInfo.year}`;
   }
 
   public static async getDayById(): Promise<Day> {
@@ -68,6 +68,10 @@ export class Day {
   }
 
   public static async getEvents(dayId: Day["day_id"]): Promise<Event[]> {
+    if (dayId === this.DEFAULT_DAY_ID) {
+      return [];
+    }
+
     const response = await fetch(`/api/day/getEventsById/${dayId}`, {
       method: "GET",
     });
@@ -78,7 +82,7 @@ export class Day {
 
   public static async linkEventsToDay(
     dayId: Day["day_id"],
-    eventIds: Event["event_id"][],
+    eventIds: Event["event_id"][]
   ): Promise<Error | undefined> {
     const response = await fetch("/api/day/linkEventsToDay", {
       method: "POST",

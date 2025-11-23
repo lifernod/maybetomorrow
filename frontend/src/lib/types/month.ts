@@ -1,4 +1,4 @@
-import { Day, DayType } from "./day";
+import { Day } from "./day";
 
 export type MonthInfo = {
   monthName: {

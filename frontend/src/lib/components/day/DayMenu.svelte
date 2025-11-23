@@ -1,58 +1,106 @@
 <script lang="ts">
-	import { type Day, type Event } from '$lib/types';
+  import { Day } from "$lib/types/day";
+  import { Event } from "$lib/types/event";
+  import { getDayInfo } from "$lib/utils/events/dateUtils";
+  import {
+    calculateVisualEvents,
+    type VisualEvent,
+  } from "$lib/utils/events/eventLayout";
+  import TimeLine from "../events/TimeLine.svelte";
+  import EventForm from "../events/EventForm.svelte";
+  import NewEventsList from "../events/NewEventsList.svelte";
 
-	type Props = {
-		day: Day;
-		events: Event[];
-		onCreateEvent: (event: Partial<Event>[]) => void;
-		onClose: () => void;
-	};
+  type Props = {
+    day: Day;
+    onCreateEvent: (events: Partial<Event>[]) => void;
+    onClose: () => void;
+  };
 
-	const { day, events, onCreateEvent, onClose }: Props = $props();
+  const { day, onCreateEvent, onClose }: Props = $props();
 
-	const dayInfo = $derived(day.getDayInfo());
+  const dayInfo = getDayInfo(day);
 
-	const newEvents = $state<Partial<Event>[]>([]);
-	const newEvent = $state<Partial<Event>>({
-		event_name: 'Название',
-		event_description: 'Описание',
-		event_start: new Date()
-	});
+  let newEvents = $state<Partial<Event>[]>([]);
+  let visualEvents = $state<VisualEvent[]>([]);
+  let isAddingEvent = $state(false);
 
-	const allEvents = $derived([...events, ...newEvents]);
+  $effect(() => {
+    const allEvents: Event[] = [...(newEvents as Event[])];
+    visualEvents = calculateVisualEvents(allEvents);
+  });
 
-	function setNewEvent(e: SubmitEvent) {
-		e.preventDefault();
-		newEvents.push(newEvent);
-	}
+  const createEmptyEvent = () => {
+    isAddingEvent = true;
+  };
+
+  const saveNewEvent = (event: Partial<Event>) => {
+    newEvents.push(event);
+    isAddingEvent = false;
+  };
+
+  const cancelNewEvent = () => {
+    isAddingEvent = false;
+  };
+
+  const removeNewEvent = (eventId: number) => {
+    newEvents = newEvents.filter((event) => event.event_id !== eventId);
+  };
+
+  const handleSaveAll = () => {
+    if (newEvents.length > 0) {
+      onCreateEvent(newEvents);
+    }
+    onClose();
+  };
 </script>
 
-<div class="absolute top-0 left-0 h-screen w-full bg-gray-100/50">
-	<div class="mx-auto flex w-fit flex-col items-center justify-center bg-white px-22 py-12">
-		<h1 class="mb-3 text-lg font-semibold">{dayInfo}</h1>
-		<section class="w-64 space-y-3">
-			{#each allEvents as event}
-				<div class="rounded border border-primary p-3">
-					<h1 class="font-medium">{event.event_name}</h1>
-					<p class="text-sm">{event.event_description}</p>
-				</div>
-			{/each}
+<div
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+>
+  <div
+    class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-hidden"
+  >
+    <!-- Header -->
+    <div class="bg-primary text-white p-6">
+      <h1 class="text-2xl font-alternates font-semibold text-center">
+        {dayInfo}
+      </h1>
+    </div>
 
-			<form class="space-y-2" onsubmit={setNewEvent}>
-				<input placeholder="Название" class="input" type="text" bind:value={newEvent.event_name} />
-				<textarea
-					placeholder="Описания"
-					class="input"
-					rows={6}
-					bind:value={newEvent.event_description}
-				></textarea>
-				<input type="date" bind:value={newEvent.event_start} />
-				<button type="submit">Добавить</button>
-			</form>
-		</section>
-		<section class="mt-5 flex w-full items-center justify-between gap-5">
-			<button onclick={() => onCreateEvent(newEvents)} class="btn btn-primary"> Сохранить </button>
-			<button class="btn btn-gray" onclick={onClose}> Отмена </button>
-		</section>
-	</div>
+    <!-- Content -->
+    <div class="p-6 max-h-[60vh] overflow-y-auto">
+      <TimeLine events={visualEvents} />
+
+      <!-- Add Event Button -->
+      <div class="mt-6 flex justify-center">
+        <button
+          onclick={createEmptyEvent}
+          class="flex items-center gap-2 px-6 py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-primary hover:text-primary hover:bg-gray-50 transition-colors"
+        >
+          <span class="text-lg">+</span>
+          <span class="font-medium">Добавить событие</span>
+        </button>
+      </div>
+
+      <!-- Event Form -->
+      <EventForm
+        isOpen={isAddingEvent}
+        onSave={saveNewEvent}
+        onCancel={cancelNewEvent}
+      />
+
+      <!-- New Events List -->
+      <NewEventsList events={newEvents} onRemove={removeNewEvent} />
+    </div>
+
+    <!-- Footer -->
+    <div class="border-t border-gray-200 p-6 bg-gray-50">
+      <div class="flex gap-3">
+        <button onclick={handleSaveAll} class="btn btn-primary flex-1">
+          Сохранить все изменения
+        </button>
+        <button onclick={onClose} class="btn btn-gray flex-1"> Закрыть </button>
+      </div>
+    </div>
+  </div>
 </div>
