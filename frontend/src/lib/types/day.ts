@@ -1,3 +1,4 @@
+import { createApiUrl } from "$lib/utils/url";
 import { Event } from "./event";
 import { Month } from "./month";
 
@@ -47,21 +48,26 @@ export class Day {
   }
 
   public static async getDayById(): Promise<Day> {
-    const response = await fetch("/api/day/getById", {
+    const response = await fetch(createApiUrl("/api/day/getById"), {
       method: "GET",
+      credentials: "include",
     });
 
     return await response.json();
   }
 
-  public static async createDay(day: Day): Promise<Error | undefined> {
-    const response = await fetch("/api/day/create", {
+  public static async createDay(day: Day): Promise<Day | Error> {
+    const response = await fetch(createApiUrl("/api/day/create"), {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(day),
+      credentials: "include",
     });
 
     if (response.ok) {
-      return;
+      return (await response.json()) as Day;
     } else {
       return new Error(response.statusText);
     }
@@ -72,9 +78,13 @@ export class Day {
       return [];
     }
 
-    const response = await fetch(`/api/day/getEventsById/${dayId}`, {
-      method: "GET",
-    });
+    const response = await fetch(
+      createApiUrl(`/api/day/getEventsById/${dayId}`),
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
 
     const json = (await response.json()) as { events: Event[] };
     return json.events;
@@ -84,9 +94,13 @@ export class Day {
     dayId: Day["day_id"],
     eventIds: Event["event_id"][]
   ): Promise<Error | undefined> {
-    const response = await fetch("/api/day/linkEventsToDay", {
+    const response = await fetch(createApiUrl("/api/day/linkEventsToDay"), {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ day_id: dayId, event_ids: eventIds }),
+      credentials: "include",
     });
 
     if (!response.ok) {

@@ -16,7 +16,15 @@
     }
   }
 
-  function onCreateEvent(events: Partial<Event>[]) {}
+  async function onCreateEvent(day: Day, events: Partial<Event>[]) {
+    const dayCreateResult = await Day.createDay(day);
+    if (dayCreateResult instanceof Error) {
+      alert(dayCreateResult);
+    } else {
+      alert("Created!");
+      console.log({ dayCreateResult });
+    }
+  }
 </script>
 
 {#if selectedDay !== null}

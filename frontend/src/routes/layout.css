@@ -31,7 +31,7 @@ textarea {
 }
 
 @utility header-link {
-    @apply py-1 px-5 first:rounded-l last:rounded-r border-r last:border-r-0 border-gray-200 hover:text-primary;
+    @apply py-1 px-5 first:rounded-l last:rounded-r border-r last:border-r-0 border-gray-200 hover:text-primary cursor-pointer;
 }
 
 @layer components {

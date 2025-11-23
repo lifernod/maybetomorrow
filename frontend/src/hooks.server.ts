@@ -5,8 +5,8 @@ const PROTECTED = ["/home"] as const;
 
 const authMiddleware: Handle = async ({ event, resolve }) => {
   if (PROTECTED.find((it) => event.url.pathname === it)) {
-    const userIdCookie = event.cookies.get("userId");
-    if (!userIdCookie) {
+    const usernameCookie = event.cookies.get("username");
+    if (!usernameCookie) {
       redirect(303, "/");
     }
   }

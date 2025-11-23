@@ -1,43 +1,26 @@
 import { Month } from "./month";
 import { Day } from "./day";
+import { createApiUrl } from "$lib/utils/url";
 
 export class User {
   public readonly user_id: string; // UUID
 
   public username: string;
-  public password_t: string; // HASH
+  public password_hash: string; // HASH
 
-  constructor(
-    user_id: string,
-    username: string,
-    password_t: string,
-    needToHash = true
-  ) {
+  constructor(user_id: string, username: string, password_hash: string) {
     this.user_id = user_id;
     this.username = username;
-    // if (needToHash) {
-    //   bcrypt.hash(password_t, 10).then((p) => (this.password_t = p));
-    // } else {
-    //   this.password_t = password_t;
-    // }
-    this.password_t = password_t;
+    this.password_hash = password_hash;
   }
 
-  public static async getUser(userId: User["user_id"]): Promise<User> {
-    const response = await fetch("http://localhost:4000/api/user/getById", {
-      method: "GET",
-    });
-
-    return await response.json();
-  }
-
-  public static async getCurrentMonth(userId: User["user_id"]): Promise<Month> {
+  public static async getCurrentMonth(): Promise<Month> {
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
 
     const response = await fetch(
-      "http://localhost:4000/api/user/getCurrentMonthById",
+      createApiUrl("/api/user/getCurrentMonthById"),
       {
         method: "POST",
         headers: {
@@ -47,6 +30,7 @@ export class User {
           year_number: year,
           month_number: month,
         }),
+        credentials: "include",
       }
     );
 

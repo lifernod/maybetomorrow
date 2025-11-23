@@ -11,7 +11,7 @@
 
   type Props = {
     day: Day;
-    onCreateEvent: (events: Partial<Event>[]) => void;
+    onCreateEvent: (day: Day, events: Partial<Event>[]) => void;
     onClose: () => void;
   };
 
@@ -47,7 +47,7 @@
 
   const handleSaveAll = () => {
     if (newEvents.length > 0) {
-      onCreateEvent(newEvents);
+      onCreateEvent(day, newEvents);
     }
     onClose();
   };
@@ -82,9 +82,9 @@
       </div>
 
       <!-- Event Form -->
-      {#key isAddingEvent}
+      {#if isAddingEvent}
         <EventForm {onSave} {onCancel} />
-      {/key}
+      {/if}
 
       <!-- New Events List -->
       <NewEventsList events={newEvents} onRemove={removeNewEvent} />
