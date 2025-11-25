@@ -96,6 +96,21 @@ func CreateRoom(roomID string, dayNumber []int, monthNumber []int, username []st
 	return err
 }
 
+func AddUserToRoom(roomID string, username string) error {
+	if dbpool == nil {
+		return fmt.Errorf("database is not initialized")
+	}
+	ctx := context.Background()
+
+	_, err := dbpool.Exec(ctx, `
+	UPDATE rooms
+	SET username = array_append(username, $1)
+	WHERE room_id = $2 AND NOT ($1 = ANY(username));
+	`, username, roomID)
+
+	return err
+}
+
 func GetEventByID(eventID int) (*Event, error) {
 	if dbpool == nil {
 		return nil, fmt.Errorf("database is not initialized")
@@ -265,4 +280,19 @@ func UpdateEvent(eventID int, name string, description string, start string, end
 
 	fmt.Printf("Event updated: id=%d, name=%s\n", eventID, name)
 	return nil
+}
+
+func RemoveUserFromRoom(username string, roomID string) error {
+	if dbpool == nil {
+		return fmt.Errorf("database is not initialized")
+	}
+	ctx := context.Background()
+
+	_, err := dbpool.Exec(ctx, `
+	UPDATE rooms
+	SET username = array_remove(username, $1)
+	WHERE room_id = $2;
+	`, username, roomID)
+
+	return err
 }
