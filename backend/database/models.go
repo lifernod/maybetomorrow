@@ -34,4 +34,5 @@ type Room struct {
 	RoomID      string `json:"room_id" db:"room_id"`
 	DayNumber   []byte `json:"day_number" db:"day_number"`
 	MonthNumber []byte `json:"month_number" db:"month_number"`
+	Username    string `json:"username" db:"username"`
 }

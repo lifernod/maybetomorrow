@@ -91,25 +91,15 @@ func CreateSchema(dbpool *pgxpool.Pool) error {
 
 	_, err = dbpool.Exec(ctx, `
 	CREATE TABLE IF NOT EXISTS rooms(
-	    roomID TEXT PRIMARY KEY UNIQUE NOT NULL,
+	    room_id TEXT PRIMARY KEY UNIQUE NOT NULL,
 	    day_number SMALLINT[] NOT NULL,
-	    month_number SMALLINT[] NOT NULL
+	    month_number SMALLINT[] NOT NULL,
+	    username VARCHAR(155)[] NOT NULL
 	);`)
 	if err != nil {
 		return fmt.Errorf("failed to create rooms table: %w", err)
 
 	}
 
-	_, err = dbpool.Exec(ctx, `
-	CREATE TABLE IF NOT EXISTS users_to_rooms (
-	    username VARCHAR(125) NOT NULL,
-	    roomID TEXT NOT NULL,
-	    PRIMARY KEY (username, roomID),
-	    CONSTRAINT fk_user FOREIGN KEY (username) REFERENCES users(username),
-	    CONSTRAINT fk_room FOREIGN KEY (roomID) REFERENCES rooms(roomID)
-	);`)
-	if err != nil {
-		return fmt.Errorf("failed to create users_to_rooms table: %w", err)
-	}
 	return nil
 }

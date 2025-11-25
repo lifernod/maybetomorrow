@@ -78,57 +78,22 @@ func CreateDay(number int16, dayType string) (int, error) {
 	return DayID, nil
 }
 
-func CreateRoom(roomID string, dayNumber []int, monthNumber []int) error {
+func CreateRoom(roomID string, dayNumber []int, monthNumber []int, username []string) error {
 	if dbpool == nil {
 		return fmt.Errorf("database is not initialized")
 	}
-
+	if len(username) == 0 {
+		return fmt.Errorf("room must be at least one user")
+	}
 	ctx := context.Background()
 
 	_, err := dbpool.Exec(ctx, `
-	INSERT INTO rooms (roomID, day_number, month_number)
-	VALUES ($1, $2, $3)
+	INSERT INTO rooms (room_id, day_number, month_number, username)
+	VALUES ($1, $2, $3, $4)
 	ON CONFLICT DO NOTHING;
-	`, roomID, dayNumber, monthNumber)
+	`, roomID, dayNumber, monthNumber, username)
 
 	return err
-}
-
-func UpdateEvent(eventID int, name string, description string, start string, end *string) error {
-	if dbpool == nil {
-		return fmt.Errorf("database is not initialized")
-	}
-	ctx := context.Background()
-
-	startTime, err := time.Parse(timeLayout, start)
-	if err != nil {
-		return fmt.Errorf("invalid start time format: %w", err)
-	}
-
-	var endTime *time.Time
-	if end != nil {
-		t, err := time.Parse(timeLayout, *end)
-		if err != nil {
-			return fmt.Errorf("invalid end time format: %w", err)
-		}
-		endTime = &t
-	}
-
-	_, err = dbpool.Exec(ctx, `
-		UPDATE events
-		SET event_name = $1, 
-		    event_description = $2,
-		    event_start = $3,
-		    event_end = $4
-		WHERE event_id = $5;
-	`, name, description, startTime, endTime, eventID)
-
-	if err != nil {
-		return fmt.Errorf("failed to update event: %w", err)
-	}
-
-	fmt.Printf("Event updated: id=%d, name=%s\n", eventID, name)
-	return nil
 }
 
 func GetEventByID(eventID int) (*Event, error) {
@@ -265,22 +230,39 @@ func LinkEventsToDay(dayID int, eventIDs ...int) error {
 	return nil
 }
 
-func LinkUserToRoom(username string, roomID string) error {
+func UpdateEvent(eventID int, name string, description string, start string, end *string) error {
 	if dbpool == nil {
 		return fmt.Errorf("database is not initialized")
 	}
 	ctx := context.Background()
 
-	_, err := dbpool.Exec(ctx, `
-		INSERT INTO users_to_rooms (username, roomID)
-		VALUES ($1, $2)
-		ON CONFLICT DO NOTHING;
-	`, username, roomID)
-
+	startTime, err := time.Parse(timeLayout, start)
 	if err != nil {
-		return fmt.Errorf("failed to add user to room: %w", err)
+		return fmt.Errorf("invalid start time format: %w", err)
 	}
 
-	fmt.Printf("User %s added to room %s\n", username, roomID)
+	var endTime *time.Time
+	if end != nil {
+		t, err := time.Parse(timeLayout, *end)
+		if err != nil {
+			return fmt.Errorf("invalid end time format: %w", err)
+		}
+		endTime = &t
+	}
+
+	_, err = dbpool.Exec(ctx, `
+		UPDATE events
+		SET event_name = $1, 
+		    event_description = $2,
+		    event_start = $3,
+		    event_end = $4
+		WHERE event_id = $5;
+	`, name, description, startTime, endTime, eventID)
+
+	if err != nil {
+		return fmt.Errorf("failed to update event: %w", err)
+	}
+
+	fmt.Printf("Event updated: id=%d, name=%s\n", eventID, name)
 	return nil
 }
