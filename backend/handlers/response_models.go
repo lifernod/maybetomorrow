@@ -10,7 +10,7 @@ type ResponseEvent struct {
 	EventName        string    `json:"event_name"`
 	EventDescription string    `json:"event_description"`
 	StartTime        string    `json:"start_time"`
-	EndTime          string    `json:"end_time"`
+	EndTime          *string   `json:"end_time"`
 }
 
 type ResponseDay struct {
