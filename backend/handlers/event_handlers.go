@@ -26,7 +26,7 @@ func CreateEvent(c *fiber.Ctx) error {
 
     if err := c.BodyParser(event); err != nil { return err }
 
-	id, err := database.CreateEvent(event.EventName, event.EventDescription)
+	id, err := database.CreateEvent(event.EventName, event.EventDescription, event.StartTime, event.EndTime)
 	if err != nil { return err }
 	event.EventID = id
 	
@@ -37,7 +37,7 @@ func UpdateEvent(c *fiber.Ctx) error {
 	event := new(ResponseEvent)
 
     if err := c.BodyParser(event); err != nil { return err }
-	if err := database.UpdateEvent(event.EventID, event.EventName, event.EventDescription); err != nil { return err }
+	if err := database.UpdateEvent(event.EventID, event.EventName, event.EventDescription, event.StartTime, event.EndTime); err != nil { return err }
 
 	return nil
 }
