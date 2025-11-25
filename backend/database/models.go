@@ -19,8 +19,8 @@ type Event struct {
 	EventName        string `json:"event_name" db:"event_name"`
 	EventDescription string `json:"event_description" db:"event_description"`
 
-	EventStart string `json:"event_start" db:"event_start"`
-	EventEnd   string `json:"event_end" db:"event_end"`
+	EventStart string  `json:"event_start" db:"event_start"`
+	EventEnd   *string `json:"event_end" db:"event_end"`
 }
 
 type Day struct {

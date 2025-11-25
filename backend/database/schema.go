@@ -44,7 +44,11 @@ func CreateSchema(dbpool *pgxpool.Pool) error {
 	CREATE TABLE IF NOT EXISTS events (
 		event_id SERIAL PRIMARY KEY,
 		event_name VARCHAR(125) NOT NULL,
-		event_description VARCHAR(1024)
+		event_description VARCHAR(1024),
+		event_start TIMESTAMP NOT NULL,
+		event_end TIMESTAMP
+	                                  
+	    CONSTRAINT check_event_time CHECK (event_end IS NULL OR event_end >= event_start)
 	);`)
 	if err != nil {
 		return fmt.Errorf("failed to create events table: %w", err)
