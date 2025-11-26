@@ -2,6 +2,10 @@
   let authType = $state<"signup" | "signin">("signin");
 </script>
 
+<svelte:head>
+  <title>Авторизация | maybetomorrow</title>
+</svelte:head>
+
 <div class="max-w-xs my-52 w-full mx-auto">
   {#if authType === "signin"}
     <form method="POST" action="?/login" class="flex flex-col gap-5">
