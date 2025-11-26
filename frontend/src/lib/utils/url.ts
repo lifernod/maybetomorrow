@@ -6,5 +6,7 @@ export const API_CONFIG = {
 };
 
 export const createApiUrl = (path: string): string => {
-  return import.meta.env.DEV ? path : `${API_CONFIG.baseURL}${path}`;
+  return import.meta.env.DEV
+    ? `http://localhost:4000${path}`
+    : `${API_CONFIG.baseURL}${path}`;
 };
