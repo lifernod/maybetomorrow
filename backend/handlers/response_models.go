@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"github.com/google/uuid"
 	"backend/database"
 )
 
@@ -27,7 +26,6 @@ type ResponseMonth struct {
 }
 
 type ResponseUser struct {
-	UserID    uuid.UUID `json:"user_id"`
 	Username  string    `json:"username"`
 	PasswordT string    `json:"password_t"`
 }
