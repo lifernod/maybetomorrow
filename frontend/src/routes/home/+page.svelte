@@ -2,19 +2,31 @@
   import MonthHeader from "$lib/components/month/MonthHeader.svelte";
   import MonthTableHead from "$lib/components/month/MonthTableHead.svelte";
   import MonthTableBody from "$lib/components/month/MonthTableBody.svelte";
-  import type { Day } from "$lib/types/day";
+  import MobileMonthHeader from "$lib/components/month/mobile/MobileMonthHeader.svelte";
+  import MobileMonth from "$lib/components/month/mobile/MobileMonth.svelte";
 
   let { data } = $props();
+
+  let viewportWidth = $state(1024);
 </script>
+
+<svelte:window bind:innerWidth={viewportWidth} />
 
 <svelte:head>
   <title>Мой месяц | maybetomorrow</title>
 </svelte:head>
 
 <section class="mt-8 flex flex-col items-center">
-  <MonthHeader monthInfo={data.month.monthInfo} />
-  <table class="w-1/2">
-    <MonthTableHead />
-    <MonthTableBody days={data.month.days} />
-  </table>
+  {#if viewportWidth > 800}
+    <MonthHeader monthInfo={data.month.monthInfo} />
+    <table class="w-1/2">
+      <MonthTableHead />
+      <MonthTableBody days={data.month.days} />
+    </table>
+  {:else}
+    <div>
+      <MobileMonthHeader monthInfo={data.month.monthInfo} />
+      <MobileMonth days={data.month.days} />
+    </div>
+  {/if}
 </section>

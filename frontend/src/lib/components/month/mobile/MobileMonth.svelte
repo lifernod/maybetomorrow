@@ -1,8 +1,10 @@
 <script lang="ts">
   import { refreshAll } from "$app/navigation";
   import { Day, DayType, type Event } from "$lib/types";
-  import DayInfo from "../day/DayInfo.svelte";
-  import DayMenu from "../day/DayMenu.svelte";
+  import DayInfo from "$lib/components/day/DayInfo.svelte";
+  import DayMenu from "$lib/components/day/DayMenu.svelte";
+
+  const weekDays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] as const;
 
   type Props = {
     days: Day[][];
@@ -46,11 +48,19 @@
   />
 {/if}
 
-<tbody>
+<div class="flex flex-col items-center justify-evenly gap-2">
+  <div class="flex items-center justify-evenly w-full">
+    {#each weekDays as weekDay}
+      <h1 class="text-center font-medium">
+        {weekDay}
+      </h1>
+    {/each}
+  </div>
+
   {#each optimisticDays as week}
-    <tr>
+    <div class="flex items-center gap-2">
       {#each week as day}
-        <td
+        <button
           onclick={() => selectDay(day)}
           class={{
             "day day-uneditable": day.day_type === DayType.Uneditable,
@@ -63,8 +73,8 @@
             dayNumber={day.day_number}
             eventsCount={day.events?.length}
           />
-        </td>
+        </button>
       {/each}
-    </tr>
+    </div>
   {/each}
-</tbody>
+</div>

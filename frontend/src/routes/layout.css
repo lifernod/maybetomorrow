@@ -28,6 +28,8 @@ textarea {
     --color-table-undefined: #fffaf4;
     --color-table-border: rgba(255, 105, 0, 0.1);
     --color-table-uneditable: #d4d4d8;
+
+    --breakpoint-sm: 800px;
 }
 
 @utility header-link {
@@ -36,7 +38,7 @@ textarea {
 
 @layer components {
     .day {
-        @apply w-26 h-26 border border-table-border text-center select-none cursor-pointer hover:border-2 hover:border-primary;
+        @apply w-26 h-26 border border-table-border text-center select-none cursor-pointer hover:border-2 hover:border-primary max-sm:w-12 max-sm:h-12 max-sm:rounded max-sm:border-none;
     }
 
     .btn {
