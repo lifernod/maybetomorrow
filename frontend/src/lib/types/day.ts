@@ -56,7 +56,7 @@ export class Day {
     return await response.json();
   }
 
-  public static async createDay(day: Day): Promise<Day | Error> {
+  public static async createDay(day: Day): Promise<Day> {
     const response = await fetch(createApiUrl("/api/day/create"), {
       method: "POST",
       headers: {
@@ -66,11 +66,7 @@ export class Day {
       credentials: "include",
     });
 
-    if (response.ok) {
-      return (await response.json()) as Day;
-    } else {
-      return new Error(response.statusText);
-    }
+    return (await response.json()) as Day;
   }
 
   public static async getEvents(dayId: Day["day_id"]): Promise<Event[]> {

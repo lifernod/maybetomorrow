@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { refreshAll } from "$app/navigation";
   import { Day, DayType, type Event } from "$lib/types";
   import DayInfo from "../day/DayInfo.svelte";
   import DayMenu from "../day/DayMenu.svelte";
@@ -16,13 +17,33 @@
     }
   }
 
+  let optimisticDays = $state(days);
+
+  $effect(() => {
+    $inspect(optimisticDays);
+  });
+
+  function optimisticUpdateDay(newDay: Day) {
+    optimisticDays = optimisticDays.map((week) => {
+      return week.map((day) => {
+        if (
+          day.day_number === selectedDay!.day_number &&
+          day.month_number === selectedDay!.month_number
+        ) {
+          return newDay;
+        }
+        return day;
+      });
+    });
+
+    selectedDay = null;
+  }
+
   async function onCreateEvent(day: Day, events: Partial<Event>[]) {
-    const dayCreateResult = await Day.createDay(day);
-    if (dayCreateResult instanceof Error) {
-      alert(dayCreateResult);
-    } else {
-      alert("Created!");
-      console.log({ dayCreateResult });
+    const result = await Day.createDay(day);
+    if (result && selectedDay) {
+      optimisticUpdateDay(result);
+      // refreshAll({ includeLoadFunctions: true });
     }
   }
 </script>
@@ -36,7 +57,7 @@
 {/if}
 
 <tbody>
-  {#each days as week}
+  {#each optimisticDays as week}
     <tr>
       {#each week as day}
         <td

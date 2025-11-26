@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Day } from "$lib/types/day";
+  import { Day, DayType } from "$lib/types/day";
   import { Event } from "$lib/types/event";
   import {
     calculateVisualEvents,
@@ -47,9 +47,11 @@
 
   const handleSaveAll = () => {
     if (newEvents.length > 0) {
-      onCreateEvent(day, newEvents);
+      // Меню закроется само
+      onCreateEvent({ ...day, day_type: DayType.Busy }, newEvents);
+    } else {
+      onClose();
     }
-    onClose();
   };
 </script>
 

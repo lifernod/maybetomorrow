@@ -2,6 +2,7 @@
   import MonthHeader from "$lib/components/month/MonthHeader.svelte";
   import MonthTableHead from "$lib/components/month/MonthTableHead.svelte";
   import MonthTableBody from "$lib/components/month/MonthTableBody.svelte";
+  import type { Day } from "$lib/types/day";
 
   let { data } = $props();
 </script>
