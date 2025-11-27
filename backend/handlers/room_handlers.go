@@ -31,3 +31,16 @@ func AddUserToRoom(c *fiber.Ctx) error {
 
 	return nil
 }
+
+func RemoveUserFromRoom(c *fiber.Ctx) error {
+	data := new(struct{
+		roomID     string    `json:"room_id"`
+		username   string    `json:"username"`
+	})
+
+	if err := c.BodyParser(data); err != nil { return err }
+
+	if err := database.RemoveUserFromRoom(data.roomID, data.username); err != nil { return err }
+
+	return nil
+}

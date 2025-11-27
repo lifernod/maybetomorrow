@@ -8,4 +8,5 @@ import (
 func SetupRoomRoutes(room fiber.Router) {
 	room.Post("/create", handlers.CreateRoom)
 	room.Post("/addUser", handlers.AddUserToRoom)
+	room.Post("/removeUser", handlers.RemoveUserFromRoom)
 }

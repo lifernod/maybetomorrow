@@ -282,7 +282,7 @@ func UpdateEvent(eventID int, name string, description string, start string, end
 	return nil
 }
 
-func RemoveUserFromRoom(username string, roomID string) error {
+func RemoveUserFromRoom(roomID string, username string) error {
 	if dbpool == nil {
 		return fmt.Errorf("database is not initialized")
 	}
