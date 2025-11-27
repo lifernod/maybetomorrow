@@ -6,11 +6,6 @@ import (
 	"strconv"
 )
 
-func GetDayById(c *fiber.Ctx) error {
-	resp := ResponseDay{}
-	return c.JSON(resp)
-}
-
 func GetEventsByDayId(c *fiber.Ctx) error {
 	dayId, err := strconv.Atoi(c.Params("id"))
 	if err != nil { return err }

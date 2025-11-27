@@ -8,12 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetUserById(c *fiber.Ctx) error {
-	resp := ResponseUser{}
-	return c.JSON(resp)
-}
-
-func GetCurrentMonthByUserId(c *fiber.Ctx) error {
+func GetCurrentMonth(c *fiber.Ctx) error {
 	//USER_ID_COOKIE_HEADER := "user_id"
 	yearMonth := new(struct {
 		Year   int    `json:"year_number"`

@@ -16,11 +16,6 @@ func GetEventById(c *fiber.Ctx) error {
 	return c.JSON(event)
 }
 
-func GetDaysByEventId(c *fiber.Ctx) error {
-	resp := [3]ResponseDay{}
-	return c.JSON(resp)
-}
-
 func CreateEvent(c *fiber.Ctx) error {
 	event := new(ResponseEvent)
 
