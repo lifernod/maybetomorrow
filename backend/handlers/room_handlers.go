@@ -15,9 +15,10 @@ func CreateRoom(c *fiber.Ctx) error {
 
 	if err := c.BodyParser(roomData); err != nil { return err }
 
-	if err := database.CreateRoom("", roomData.DayNumbers, roomData.MonthNumbers, roomData.OwnerUsername, roomData.Usernames); err != nil { return err } //Fix "" to nothing after db func fix
+	roomId, err := database.CreateRoom(roomData.DayNumbers, roomData.MonthNumbers, roomData.OwnerUsername, roomData.Usernames); 
+	if err != nil { return err }
 
-	return nil  //Fix to sending roomID
+	return c.SendString(roomId)
 }
 
 func AddUserToRoom(c *fiber.Ctx) error {

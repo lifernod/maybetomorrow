@@ -17,15 +17,18 @@ func GetEventById(c *fiber.Ctx) error {
 }
 
 func CreateEvent(c *fiber.Ctx) error {
-	event := new(ResponseEvent)
+	var events []database.Event
 
-    if err := c.BodyParser(event); err != nil { return err }
+    if err := c.BodyParser(events); err != nil { return err }
 
-	id, err := database.CreateEvent(event.EventName, event.EventDescription, event.StartTime, event.EndTime)
+	ids, err := database.CreateEvent(events)
 	if err != nil { return err }
-	event.EventID = id
 	
-	return c.JSON(event)
+	for i:=0 ; i < len(events)-1 ; i++ {
+		events[i].EventID = ids[i]
+	}
+	
+	return c.JSON(events)
 }
 
 func UpdateEvent(c *fiber.Ctx) error {
