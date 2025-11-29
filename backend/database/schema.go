@@ -94,7 +94,10 @@ func CreateSchema(dbpool *pgxpool.Pool) error {
 	    room_id TEXT PRIMARY KEY UNIQUE NOT NULL,
 	    day_number SMALLINT[] NOT NULL,
 	    month_number SMALLINT[] NOT NULL,
-	    username VARCHAR(155)[] NOT NULL
+	    owner_username VARCHAR(125) NOT NULL,
+	    username VARCHAR(155)[] NOT NULL,
+	    
+	    constraint fk_owner_username FOREIGN KEY (owner_username) REFERENCES users(username)
 	);`)
 	if err != nil {
 		return fmt.Errorf("failed to create rooms table: %w", err)

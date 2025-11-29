@@ -58,7 +58,7 @@ func CreateEvent(name string, description string, start string, end *string) (in
 	return eventID, nil
 }
 
-func CreateDay(number int16, dayType string) (int, error) {
+func CreateDay(number byte, dayType string) (int, error) {
 	if dbpool == nil {
 		return 0, fmt.Errorf("database is not initialized")
 	}
@@ -78,20 +78,30 @@ func CreateDay(number int16, dayType string) (int, error) {
 	return DayID, nil
 }
 
-func CreateRoom(roomID string, dayNumber []int, monthNumber []int, username []string) error {
+func CreateRoom(roomID string, dayNumber []byte, monthNumber []byte, ownerUsername string, username []string) error {
 	if dbpool == nil {
 		return fmt.Errorf("database is not initialized")
 	}
 	if len(username) == 0 {
 		return fmt.Errorf("room must be at least one user")
 	}
+	isOwnerInList := false
+	for _, user := range username {
+		if user == ownerUsername {
+			isOwnerInList = true
+			break
+		}
+	}
+	if !isOwnerInList {
+		username = append(username, ownerUsername)
+	}
 	ctx := context.Background()
 
 	_, err := dbpool.Exec(ctx, `
-	INSERT INTO rooms (room_id, day_number, month_number, username)
-	VALUES ($1, $2, $3, $4)
+	INSERT INTO rooms (room_id, day_number, month_number, owner_username, username)
+	VALUES ($1, $2, $3, $4, $5)
 	ON CONFLICT DO NOTHING;
-	`, roomID, dayNumber, monthNumber, username)
+	`, roomID, dayNumber, monthNumber, ownerUsername, username)
 
 	return err
 }
@@ -188,7 +198,7 @@ func GetEventsByDayID(dayID int) ([]Event, error) {
 	return events, nil
 }
 
-func GetUserDaysByMonth(username string, month int) ([]Day, error) {
+func GetUserDaysByMonth(username string, month byte) ([]Day, error) {
 	if dbpool == nil {
 		return nil, fmt.Errorf("database is not initialized")
 	}
@@ -217,6 +227,60 @@ func GetUserDaysByMonth(username string, month int) ([]Day, error) {
 	}
 
 	return result, nil
+}
+
+func GetRoomByRoomID(roomID string) (*Room, error) {
+	if dbpool == nil {
+		return nil, fmt.Errorf("database is not initialized")
+	}
+	ctx := context.Background()
+
+	var r Room
+
+	err := dbpool.QueryRow(ctx, `
+		SELECT room_id, day_number, month_number, owner_username, username
+		FROM rooms WHERE room_id = $1;
+	`, roomID).Scan(&r.RoomID, &r.DayNumber, &r.MonthNumber, &r.OwnerUsername, &r.Username)
+
+	if err != nil {
+		if err.Error() == "no rows in result set" {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("failed to get room by RoomID: %w", err)
+	}
+
+	return &r, nil
+}
+
+func GetRoomsByOwnerUsername(ownerUsername string) ([]Room, error) {
+	if dbpool == nil {
+		return nil, fmt.Errorf("database is not initialized")
+	}
+	ctx := context.Background()
+
+	rows, err := dbpool.Query(ctx, `
+		SELECT room_id, day_number, month_number, owner_username, username
+		FROM rooms WHERE owner_username = $1;
+	`, ownerUsername)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to get rooms by OwnerUsername: %w", err)
+	}
+	defer rows.Close()
+
+	var rooms []Room
+	for rows.Next() {
+		var r Room
+
+		err := rows.Scan(&r.RoomID, &r.DayNumber, &r.MonthNumber, &r.OwnerUsername, &r.Username)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan room row: %w", err)
+		}
+
+		rooms = append(rooms, r)
+	}
+
+	return rooms, nil
 }
 
 func LinkEventsToDay(dayID int, eventIDs ...int) error {
@@ -291,7 +355,7 @@ func RemoveUserFromRoom(roomID string, username string) error {
 	_, err := dbpool.Exec(ctx, `
 	UPDATE rooms
 	SET username = array_remove(username, $1)
-	WHERE room_id = $2;
+	WHERE room_id = $2 AND owner_username <> $1;
 	`, username, roomID)
 
 	return err
