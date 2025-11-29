@@ -46,3 +46,12 @@ func RemoveUserFromRoom(c *fiber.Ctx) error {
 
 	return nil
 }
+
+func GetRoomByRoomID(c *fiber.Ctx) error {
+	roomId := c.Params("id")
+	
+	room, err := database.GetRoomByRoomID(roomId)
+	if err != nil { return err }
+
+	return c.JSON(room)
+}
