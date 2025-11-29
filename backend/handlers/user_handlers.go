@@ -60,6 +60,26 @@ func GetCurrentMonth(c *fiber.Ctx) error {
 		resp.Days[weeks-1][lastDayWeekNumber + i] = ResponseDay{-1, byte(i), nextMonth, database.DayUneditable, []int{}}
 	}
 
+	user := new(ResponseUser)
+	if err := c.CookieParser(user); err != nil { return err }
+
+	dbDays, err := database.GetUserDaysByMonth(user.Username, byte(yearMonth.Month + (yearMonth.Year - 2025) * 12))
+	if err != nil { return err }
+
+	for _, dbDay := range dbDays {
+		for _, line := range resp.Days {
+			for _, respDay := range line {
+				if respDay.DayNumber == dbDay.DayNumber && respDay.MonthNumber == dbDay.MonthNumber {
+					respDay.DayID = dbDay.DayID
+					events, err := database.GetEventsByDayID(respDay.DayID)
+					if err != nil { return err }
+					
+					for _, e := range events { respDay.Events = append(respDay.Events, e.EventID) }
+				}
+			}
+		}
+	}
+
 	return c.JSON(resp)
 }
 
