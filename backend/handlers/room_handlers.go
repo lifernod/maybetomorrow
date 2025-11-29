@@ -7,40 +7,41 @@ import (
 
 func CreateRoom(c *fiber.Ctx) error {
 	roomData := new(struct{
-		dayNumbers     []int     `json:"day_numbers"`
-		monthNumbers   []int     `json:"month_numbers"`
-		usernames      []string  `json:"usernames"`
+		DayNumbers     []byte    `json:"day_numbers"`
+		MonthNumbers   []byte    `json:"month_numbers"`
+		OwnerUsername  string    `json:"owner_username"`
+		Usernames      []string  `json:"usernames"`
 	})
 
 	if err := c.BodyParser(roomData); err != nil { return err }
 
-	if err := database.CreateRoom("", roomData.dayNumbers, roomData.monthNumbers, roomData.usernames); err != nil { return err } //Fix "" to nothing after db func fix
+	if err := database.CreateRoom("", roomData.DayNumbers, roomData.MonthNumbers, roomData.OwnerUsername, roomData.Usernames); err != nil { return err } //Fix "" to nothing after db func fix
 
 	return nil  //Fix to sending roomID
 }
 
 func AddUserToRoom(c *fiber.Ctx) error {
 	data := new(struct{
-		roomID     string    `json:"room_id"`
-		username   string    `json:"username"`
+		RoomID     string    `json:"room_id"`
+		Username   string    `json:"username"`
 	})
 
 	if err := c.BodyParser(data); err != nil { return err }
 
-	if err := database.AddUserToRoom(data.roomID, data.username); err != nil { return err }
+	if err := database.AddUserToRoom(data.RoomID, data.Username); err != nil { return err }
 
 	return nil
 }
 
 func RemoveUserFromRoom(c *fiber.Ctx) error {
 	data := new(struct{
-		roomID     string    `json:"room_id"`
-		username   string    `json:"username"`
+		RoomID     string    `json:"room_id"`
+		Username   string    `json:"username"`
 	})
 
 	if err := c.BodyParser(data); err != nil { return err }
 
-	if err := database.RemoveUserFromRoom(data.roomID, data.username); err != nil { return err }
+	if err := database.RemoveUserFromRoom(data.RoomID, data.Username); err != nil { return err }
 
 	return nil
 }

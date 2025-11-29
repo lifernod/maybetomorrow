@@ -27,7 +27,7 @@ type ResponseMonth struct {
 
 type ResponseUser struct {
 	Username  string    `json:"username"`
-	PasswordT string    `json:"password_t"`
+	PasswordHash string    `json:"password_hash"`
 }
 
 type ResponseLinkEventsToDay struct {
