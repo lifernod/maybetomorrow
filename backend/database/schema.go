@@ -34,7 +34,7 @@ func CreateSchema(dbpool *pgxpool.Pool) error {
 	_, err = dbpool.Exec(ctx, `
 	CREATE TABLE IF NOT EXISTS users (
 		username VARCHAR(125) PRIMARY KEY UNIQUE NOT NULL,
-		password_hash VARCHAR(32) NOT NULL
+		password_hash VARCHAR(128) NOT NULL
 	);`)
 	if err != nil {
 		return fmt.Errorf("failed to create users table: %w", err)

@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 const timeLayout = "2006-01-02 15:04:05"
@@ -13,49 +15,80 @@ func CreateUser(username string, passwordHash string) error {
 		return fmt.Errorf("database is not initialized")
 	}
 
+	hashedPasswordBytes, err := bcrypt.GenerateFromPassword([]byte(passwordHash), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("failed to hash password: %w", err)
+	}
+	hashedPassword := string(hashedPasswordBytes)
 	ctx := context.Background()
 
-	_, err := dbpool.Exec(ctx, `
+	_, err = dbpool.Exec(ctx, `
 	INSERT INTO users (username, password_hash) 
 	VALUES ($1, $2) 
 	ON CONFLICT DO NOTHING;
-	`, username, passwordHash)
+	`, username, hashedPassword)
 
+	fmt.Printf("User '%s' created successfully.\n", username)
 	return err
 }
 
-func CreateEvent(name string, description string, start string, end *string) (int, error) {
+func CreateEvent(events []Event) ([]int, error) {
 	if dbpool == nil {
-		return 0, fmt.Errorf("database is not initialized")
+		return nil, fmt.Errorf("database is not initialized")
+	}
+	if len(events) == 0 {
+		return []int{}, nil
 	}
 	ctx := context.Background()
 
-	startTime, err := time.Parse(timeLayout, start)
-	if err != nil {
-		return 0, fmt.Errorf("invalid start time format: %w", err)
-	}
+	var eventNames []string
+	var eventDescriptions []string
+	var eventStarts []*time.Time
+	var eventEnds []*time.Time
 
-	var endTime *time.Time
-	if end != nil {
-		t, err := time.Parse(timeLayout, *end)
+	for _, e := range events {
+		startTime, err := time.Parse(timeLayout, e.EventStart)
 		if err != nil {
-			return 0, fmt.Errorf("invalid end time format: %w", err)
+			return nil, fmt.Errorf("invalid start time format in event '%s': %w", e.EventName, err)
 		}
-		endTime = &t
+
+		var endTime *time.Time
+		if e.EventEnd != nil {
+			t, err := time.Parse(timeLayout, *e.EventEnd)
+			if err != nil {
+				return nil, fmt.Errorf("nvalid end time format in event '%s': %w", e.EventName, err)
+			}
+			endTime = &t
+		}
+		eventNames = append(eventNames, e.EventName)
+		eventDescriptions = append(eventDescriptions, e.EventDescription)
+		eventStarts = append(eventStarts, &startTime)
+		eventEnds = append(eventEnds, endTime)
 	}
 
-	var eventID int
-	err = dbpool.QueryRow(ctx, `
+	query := `
 		INSERT INTO events (event_name, event_description, event_start, event_end)
-		VALUES ($1, $2, $3, $4)
+		SELECT * FROM UNNEST($1::VARCHAR[], $2::VARCHAR[], $3::TIMESTAMP[], $4::TIMESTAMP[])
 		RETURNING event_id;
-		`, name, description, startTime, endTime).Scan(&eventID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to create event: %w", err)
-	}
+	`
 
-	fmt.Printf("Event created: id=%d, name=%s\n:", eventID, name)
-	return eventID, nil
+	rows, err := dbpool.Query(ctx, query, eventNames, eventDescriptions, eventStarts, eventEnds)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create multiple events: %w", err)
+	}
+	defer rows.Close()
+
+	var eventIDs []int
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err != nil {
+			return nil, fmt.Errorf("failed to scan returned event ID: %w", err)
+		}
+		eventIDs = append(eventIDs, id)
+	}
+	fmt.Printf("Successfully created %d events. IDs: %v\n", len(eventIDs), eventIDs)
+
+	return eventIDs, nil
 }
 
 func CreateDay(number byte, dayType string) (int, error) {
@@ -281,6 +314,38 @@ func GetRoomsByOwnerUsername(ownerUsername string) ([]Room, error) {
 	}
 
 	return rooms, nil
+}
+
+func ValidateUser(username string, passwordHash string) (bool, error) {
+	if dbpool == nil {
+		return false, fmt.Errorf("database is not initialized")
+	}
+	ctx := context.Background()
+
+	var storedHash string
+	err := dbpool.QueryRow(ctx, `
+		SELECT password_hash
+		FROM users
+		WHERE username = $1;
+		`, username).Scan(&storedHash)
+
+	if err != nil {
+		if err.Error() == "no rows in result set" {
+			return false, nil
+		}
+		return false, fmt.Errorf("database query failed for user verification: %w", err)
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(passwordHash))
+	if err != nil {
+		fmt.Printf("User '%s' verified successfully.\n", username)
+		return true, nil
+	} else if err == bcrypt.ErrMismatchedHashAndPassword {
+		fmt.Printf("Verification failed for user '%s': incorrect password.\n", username)
+		return false, nil
+	}
+
+	return false, fmt.Errorf("bcrypt comparison failed: %w", err)
 }
 
 func LinkEventsToDay(dayID int, eventIDs ...int) error {
