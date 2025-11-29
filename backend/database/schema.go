@@ -91,7 +91,7 @@ func CreateSchema(dbpool *pgxpool.Pool) error {
 
 	_, err = dbpool.Exec(ctx, `
 	CREATE TABLE IF NOT EXISTS rooms(
-	    room_id TEXT PRIMARY KEY UNIQUE NOT NULL,
+	    room_id UUID PRIMARY KEY UNIQUE NOT NULL,
 	    day_number SMALLINT[] NOT NULL,
 	    month_number SMALLINT[] NOT NULL,
 	    owner_username VARCHAR(125) NOT NULL,

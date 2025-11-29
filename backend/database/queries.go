@@ -111,13 +111,14 @@ func CreateDay(number byte, dayType string) (int, error) {
 	return DayID, nil
 }
 
-func CreateRoom(roomID string, dayNumber []byte, monthNumber []byte, ownerUsername string, username []string) error {
+func CreateRoom(dayNumber []byte, monthNumber []byte, ownerUsername string, username []string) (string, error) {
 	if dbpool == nil {
-		return fmt.Errorf("database is not initialized")
+		return "", fmt.Errorf("database is not initialized")
 	}
 	if len(username) == 0 {
-		return fmt.Errorf("room must be at least one user")
+		return "", fmt.Errorf("room must be at least one user")
 	}
+
 	isOwnerInList := false
 	for _, user := range username {
 		if user == ownerUsername {
@@ -130,13 +131,19 @@ func CreateRoom(roomID string, dayNumber []byte, monthNumber []byte, ownerUserna
 	}
 	ctx := context.Background()
 
-	_, err := dbpool.Exec(ctx, `
-	INSERT INTO rooms (room_id, day_number, month_number, owner_username, username)
-	VALUES ($1, $2, $3, $4, $5)
-	ON CONFLICT DO NOTHING;
-	`, roomID, dayNumber, monthNumber, ownerUsername, username)
+	var roomID string
+	err := dbpool.QueryRow(ctx, `
+		INSERT INTO rooms (room_id, day_number, month_number, username, owner_username)
+		VALUES (gen_random_uuid(), $1, $2, $3, $4)
+		RETURNING room_id;
+	`, dayNumber, monthNumber, username, ownerUsername).Scan(&roomID)
 
-	return err
+	if err != nil {
+		return "", fmt.Errorf("failed to create room: %w", err)
+	}
+
+	fmt.Printf("Room created with ID: %s by owner %s\n", roomID, ownerUsername)
+	return roomID, err
 }
 
 func AddUserToRoom(roomID string, username string) error {
