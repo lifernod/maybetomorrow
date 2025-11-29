@@ -10,4 +10,5 @@ func SetupRoomRoutes(room fiber.Router) {
 	room.Post("/addUser", handlers.AddUserToRoom)
 	room.Post("/removeUser", handlers.RemoveUserFromRoom)
 	room.Get("/GetRoomByRoomID/:id", handlers.GetRoomByRoomID)
+	room.Get("/GetRoomsByOwnerUsername/:ownerUsername", handlers.GetRoomsByOwnerUsername)
 }

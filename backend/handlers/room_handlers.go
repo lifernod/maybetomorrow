@@ -55,3 +55,12 @@ func GetRoomByRoomID(c *fiber.Ctx) error {
 
 	return c.JSON(room)
 }
+
+func GetRoomsByOwnerUsername(c *fiber.Ctx) error {
+	ownerUsername := c.Params("ownerUsername")
+
+	rooms, err := database.GetRoomsByOwnerUsername(ownerUsername)
+	if err != nil { return err }
+
+	return c.JSON(rooms)
+}
