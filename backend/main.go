@@ -4,7 +4,7 @@ import (
 	"backend/database"
 	"backend/routes"
 	"fmt"
-
+	"backend/handlers"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -15,6 +15,17 @@ func main() {
 	defer database.GetPool().Close()
 
 	app := fiber.New()
+
+	app.Use(func(c *fiber.Ctx) error {
+		user := new(handlers.ResponseUser)
+		if err := c.CookieParser(user); err != nil { return err }
+
+		isRight, err := database.ValidateUser(user.Username, user.PasswordHash)
+		if err != nil { return err }
+		
+		if isRight { c.Next() }
+		return fmt.Errorf("user %s is not validated", user.Username)
+	})
 
 	routes.SetupApiRoutes(app)
 
