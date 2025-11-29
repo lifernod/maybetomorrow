@@ -74,3 +74,7 @@ func CreateUser(c *fiber.Ctx) error {
 
 	return nil
 }
+
+func CheckUser(c *fiber.Ctx) error {
+	return c.SendString("User is validated")
+}
