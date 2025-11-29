@@ -357,19 +357,22 @@ func LinkEventsToDay(dayID int, eventIDs ...int) error {
 	}
 	ctx := context.Background()
 
-	for _, eventID := range eventIDs {
-		_, err := dbpool.Exec(ctx, `
-			INSERT INTO events_to_days (event_id, day_id)
-			VALUES ($1, $2)
-			ON CONFLICT DO NOTHING;
-		`, eventID, dayID)
-
-		if err != nil {
-			return fmt.Errorf("failed to link event %d to day %d: %w", eventID, dayID, err)
-		}
-
-		fmt.Printf("Linked event %d to day %d\n", eventID, dayID)
+	var dayIDs []int
+	for range eventIDs {
+		dayIDs = append(dayIDs, dayID)
 	}
+
+	_, err := dbpool.Exec(ctx, `
+		INSERT INTO events_to_days (event_id, day_id)
+		SELECT * FROM UNNEST($1::INT[], $2::INT[])
+		ON CONFLICT DO NOTHING;
+	`, eventIDs, dayIDs)
+
+	if err != nil {
+		return fmt.Errorf("failed to link events to day %d: %w", dayID, err)
+	}
+
+	fmt.Printf("Successfully linked %d events to day %d\n", len(eventIDs), dayID)
 
 	return nil
 }
