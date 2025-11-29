@@ -344,7 +344,7 @@ func ValidateUser(username string, passwordHash string) (bool, error) {
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(passwordHash))
-	if err != nil {
+	if err == nil {
 		fmt.Printf("User '%s' verified successfully.\n", username)
 		return true, nil
 	} else if err == bcrypt.ErrMismatchedHashAndPassword {
