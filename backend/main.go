@@ -17,13 +17,15 @@ func main() {
 	app := fiber.New()
 
 	app.Use(func(c *fiber.Ctx) error {
+		if c.Path() == "/api/user/create" && c.Method() == "POST" { return c.Next() }
+
 		user := new(handlers.ResponseUser)
 		if err := c.CookieParser(user); err != nil { return err }
 
 		isRight, err := database.ValidateUser(user.Username, user.PasswordHash)
 		if err != nil { return err }
 		
-		if isRight { c.Next() }
+		if isRight { return c.Next() }
 		return fmt.Errorf("user %s is not validated", user.Username)
 	})
 
