@@ -8,4 +8,5 @@ func SetupApiRoutes(app *fiber.App) {
 	SetupEventRoutes(api.Group("/event"))
 	SetupDayRoutes(api.Group("/day"))
 	SetupUserRoutes(api.Group("/user"))
+	SetupRoomRoutes(api.Group("/room"))
 }
