@@ -1,0 +1,16 @@
+<form method="POST" action="?/login" class="flex flex-col gap-5">
+	<h1 class="font-alternates text-xl text-center font-medium italic">
+		С возвращением!
+	</h1>
+	<div>
+		<label for="username">имя пользователя</label>
+		<input type="text" name="username" class="w-full" required />
+	</div>
+
+	<div>
+		<label for="password">пароль</label>
+		<input type="password" name="password" class="w-full" required />
+	</div>
+
+	<button class="btn btn-primary w-full" type="submit"> Войти </button>
+</form>

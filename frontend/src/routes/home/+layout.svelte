@@ -1,16 +1,16 @@
 <script lang="ts">
-    import "../layout.css";
-    import favicon from "$lib/assets/favicon.svg";
-    import Header from "$lib/components/shared/Header.svelte";
-    import Footer from "$lib/components/shared/Footer.svelte";
+	import "../layout.css";
+	import favicon from "$lib/assets/favicon.svg";
+	import type { LayoutProps } from './$types';
 
-    let { children } = $props();
+	let { children, data }: LayoutProps = $props();
+
 </script>
 
 <svelte:head>
-    <link rel="icon" href={favicon} />
+	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<Header />
+<a>Layout: {data.month}</a>
 {@render children()}
-<Footer />
+

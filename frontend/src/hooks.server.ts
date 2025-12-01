@@ -1,22 +1,14 @@
-// import { type Handle } from "@sveltejs/kit";
-// import { sequence } from "@sveltejs/kit/hooks";
+import { redirect, type Handle } from "@sveltejs/kit";
+import { sequence } from "@sveltejs/kit/hooks";
 
-// const PROTECTED = [
-//     "/home"
-// ] as const;
+const PROTECTED = ["/home"] as const;
 
-// const authMiddleware: Handle = async ({ event, resolve }) => {
-//     if (!PROTECTED.find((it) => it === event.route.id)) {
-//         const response = await resolve(event);
-//         return response;
-//     }
+const authMiddleware: Handle = async ({ event, resolve }) => {
+	// if (PROTECTED.find((it) => event.url.pathname === it)) {
+	// 	redirect(308, "/home");
+	// }
 
-//     // TODO: api call !event.cookies.get("userId")
-//     if (true) {
-//         return Response.redirect("http://localhost:3000/", 303);
-//     }
-//     const response = await resolve(event);
-//     return response;
-// };
+	return await resolve(event);
+};
 
-// export const handle = sequence(authMiddleware);
+export const handle = sequence(authMiddleware);

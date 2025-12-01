@@ -1,7 +1,2 @@
-<script lang="ts">
-</script>
-
-<form method="POST" action="?/login" class="flex flex-col">
-	<input name="userId" placeholder="userId" />
-	<button class="btn btn-primary w-16" type="submit"> Login </button>
-</form>
+<h1>Welcome to SvelteKit</h1>
+<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
