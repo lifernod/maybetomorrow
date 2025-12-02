@@ -1,12 +1,9 @@
 import { Result } from 'typescript-result';
 import { FetchError } from '$lib/errors';
 import type { EntityOf, Keys, ResponseOf } from '$lib/typeUtils/typesList';
-import type { Converter } from '$lib/typeUtils/convert';
 import { createApiUrl } from '$lib/api';
 import { converterMap } from '$lib/typeUtils/converterMap';
-
-export type Fetcher = typeof fetch;
-export type FetcherResponse<T> = Promise<Result.Ok<T> | Result.Error<FetchError>>;
+import type { Fetcher, FetcherResponse } from './fetcher_result';
 
 type BaseRawFetcherProps = {
 	endpoint: string,
@@ -16,7 +13,13 @@ type BaseRawFetcherProps = {
 	body?: BodyInit
 }
 
-type BaseFetcherProps<K extends Keys> = BaseRawFetcherProps & { body?: EntityOf<K> | EntityOf<K>[] };
+type BaseFetcherProps<K extends Keys> = {
+	endpoint: string,
+	method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE',
+	includeCredentials?: boolean,
+	headers?: Headers,
+	body?: EntityOf<K> | EntityOf<K>[]
+};
 
 
 export class BaseFetcher {

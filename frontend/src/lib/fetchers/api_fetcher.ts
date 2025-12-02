@@ -1,7 +1,7 @@
-import { EventFetcher } from '$lib/apiFetchers/eventFetcher';
-import { DayFetcher } from '$lib/apiFetchers/dayFetcher';
+import { EventFetcher } from '$lib/entities/event/event_fetcher';
+import { DayFetcher } from '$lib/entities/day/day_fetcher';
 import type { Fetcher } from '$lib/api';
-import { MonthFetcher } from '$lib/apiFetchers/monthFetcher';
+import { MonthFetcher } from '$lib/entities/month/month_fetcher';
 
 export class ApiFetcher {
 	private readonly fetcher: Fetcher;

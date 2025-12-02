@@ -1,6 +1,6 @@
 import { type Fetcher } from '$lib/api';
-import { type EventEntity } from '$lib/entities/event';
-import { BaseFetcher } from '$lib/apiFetchers/baseFetcher';
+import { type EventEntity } from '$lib/entities/event/event_entity';
+import { BaseFetcher } from '$lib/fetchers/base_fetcher';
 
 export class EventFetcher extends BaseFetcher {
 	constructor(fetcher: Fetcher) {

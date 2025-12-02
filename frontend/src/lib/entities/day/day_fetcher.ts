@@ -1,6 +1,6 @@
-import { DayConverter, type DayEntity, type ResponseDayEntity } from '$lib/entities/day';
+import type { DayEntity } from '$lib/entities/day/day_entity';
 
-import { BaseFetcher } from '$lib/apiFetchers/baseFetcher';
+import { BaseFetcher } from '$lib/fetchers/base_fetcher';
 import type { Fetcher } from '$lib/api';
 
 export class DayFetcher extends BaseFetcher {

@@ -1,6 +1,6 @@
-import { BaseFetcher } from '$lib/apiFetchers/baseFetcher';
+import { BaseFetcher } from '$lib/fetchers/base_fetcher';
 import { type Fetcher } from '$lib/api';
-import type { ResponseMonthEntity } from '$lib/entities/month';
+import type { ResponseMonthEntity } from '$lib/entities/month/month_entity';
 import { converterMap } from '$lib/typeUtils/converterMap';
 
 export class MonthFetcher extends BaseFetcher {
@@ -13,9 +13,11 @@ export class MonthFetcher extends BaseFetcher {
 		const currentMonth = now.getMonth();
 		const currentYear = now.getFullYear();
 
+
 		const result = await this.rawFetch<ResponseMonthEntity>({
 			endpoint: "/user/getCurrentMonth",
 			headers: {
+				// @ts-expect-error Content-Type хэдер существует...
 				"Content-Type": "application/json"
 			},
 			method: "POST",

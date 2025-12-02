@@ -1,10 +1,10 @@
 import type { Converter } from '$lib/typeUtils/convert';
 import type { Keys } from '$lib/typeUtils/typesList';
-import { EventConverter } from '$lib/entities/event';
-import { DayConverter } from '$lib/entities/day';
-import { MonthConverter } from '$lib/entities/month';
-import { RoomConverter } from '$lib/entities/room';
-import { UserConverter } from '$lib/entities/user';
+import { EventConverter } from '$lib/entities/event/event_entity';
+import { DayConverter } from '$lib/entities/day/day_entity';
+import { MonthConverter } from '$lib/entities/month/month_entity';
+import { RoomConverter } from '$lib/entities/room/room_entity';
+import { UserConverter } from '$lib/entities/user/user_entity';
 
 export type ConverterMap = {
 	[K in Keys]: Converter<K>;

@@ -11,6 +11,8 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<a>Layout: {data.month}</a>
+<pre>
+	{JSON.stringify(data.month)}
+</pre>
 {@render children()}
 

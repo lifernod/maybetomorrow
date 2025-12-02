@@ -1,7 +1,6 @@
 import type { CamelKeysToSnake } from '$lib/typeUtils/rename';
 import { getEnumKeyByValue } from '$lib/typeUtils/enumKV';
 import { Converter } from '$lib/typeUtils/convert';
-import type { EntityOf, ObjectOf } from '$lib/typeUtils/typesList';
 
 export enum DayType {
 	Free = "free",
@@ -15,7 +14,7 @@ export function getDayTypeFromString(value: string): DayType {
 	return DayType[key ?? "Free"];
 }
 
-export type DayEntityType = {
+export type DayEntity = {
 	dayId: number;
 	dayNumber: number;
 	monthNumber: number;
@@ -24,35 +23,18 @@ export type DayEntityType = {
 };
 
 export type ResponseDayEntity = CamelKeysToSnake<
-	Omit<DayEntityType, 'dayType'> & { dayType: string }
+	Omit<DayEntity, 'dayType'> & { dayType: string }
 >;
-
-
-export class DayEntity {
-	public dayId: number;
-	public dayNumber: number;
-	public monthNumber: number;
-	public dayType: DayType;
-	public events: number[];
-
-	constructor(obj: DayEntityType) {
-		this.dayId = obj.dayId;
-		this.dayNumber = obj.dayNumber;
-		this.monthNumber = obj.monthNumber;
-		this.dayType = obj.dayType;     // ✔ исправлено!
-		this.events = obj.events;
-	}
-}
 
 export class DayConverter extends Converter<'day'> {
 	public convertSingleFromResponse(response: ResponseDayEntity): DayEntity {
-		return new DayEntity({
+		return {
 			dayId: response.day_id,
 			dayNumber: response.day_number,
 			monthNumber: response.month_number,
 			dayType: getDayTypeFromString(response.day_type),
 			events: response.events
-		});
+		};
 	}
 
 	public convertSingleToRequest(entity: DayEntity): ResponseDayEntity {
@@ -63,13 +45,5 @@ export class DayConverter extends Converter<'day'> {
 			day_type: entity.dayType.valueOf(),
 			events: entity.events
 		};
-	}
-
-	public serialize(entity: DayEntity): DayEntityType {
-		return { ...entity };
-	}
-
-	public deserialize(obj: DayEntityType): DayEntity {
-		return new DayEntity(obj);
 	}
 }

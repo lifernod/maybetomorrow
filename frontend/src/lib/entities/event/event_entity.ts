@@ -2,7 +2,7 @@ import type { CamelKeysToSnake } from '$lib/typeUtils/rename';
 import { Converter } from '$lib/typeUtils/convert';
 import { formatDate } from '$lib/api';
 
-export type EventEntityType = {
+export type EventEntity = {
 	eventId: number;
 	eventName: string;
 	eventDescription?: string;
@@ -11,35 +11,18 @@ export type EventEntityType = {
 };
 
 export type ResponseEventEntity = CamelKeysToSnake<
-	Omit<EventEntityType, 'startTime' | 'endTime'> & { eventStart: string, eventEnd?: string }
+	Omit<EventEntity, 'startTime' | 'endTime'> & { eventStart: string, eventEnd?: string }
 >;
-
-
-export class EventEntity {
-	public eventId: number;
-	public eventName: string;
-	public eventDescription?: string;
-	public startTime: Date;
-	public endTime?: Date;
-
-	constructor(obj: EventEntityType) {
-		this.eventId = obj.eventId;
-		this.eventName = obj.eventName;
-		this.eventDescription = obj.eventDescription;
-		this.startTime = obj.startTime;
-		this.endTime = obj.endTime;
-	}
-}
 
 export class EventConverter extends Converter<'event'> {
 	public convertSingleFromResponse(r: ResponseEventEntity): EventEntity {
-		return new EventEntity({
+		return {
 			eventId: r.event_id,
 			eventName: r.event_name,
 			eventDescription: r.event_description,
 			startTime: new Date(r.event_start),
 			endTime: r.event_end ? new Date(r.event_end) : undefined
-		});
+		};
 	}
 
 	public convertSingleToRequest(entity: EventEntity): ResponseEventEntity {
@@ -52,12 +35,4 @@ export class EventConverter extends Converter<'event'> {
 		};
 	}
 
-
-	public serialize(entity: EventEntity): EventEntityType {
-		return { ...entity };
-	}
-
-	public deserialize(obj: EventEntityType): EventEntity {
-		return new EventEntity(obj);
-	}
 }

@@ -1,8 +1,8 @@
-import { EventEntity, type EventEntityType, type ResponseEventEntity } from '$lib/entities/event';
-import { DayEntity, type DayEntityType, type ResponseDayEntity } from '$lib/entities/day';
-import  { MonthEntity, type ResponseMonthEntity } from '$lib/entities/month';
-import { type ResponseRoomEntity, RoomEntity, type RoomEntityType } from '$lib/entities/room';
-import { type ResponseUserEntity, UserEntity, type UserEntityType } from '$lib/entities/user';
+import { type EventEntity, type ResponseEventEntity } from '$lib/entities/event/event_entity';
+import { type DayEntity, type ResponseDayEntity } from '$lib/entities/day/day_entity';
+import  { type MonthEntity, type ResponseMonthEntity } from '$lib/entities/month/month_entity';
+import { type ResponseRoomEntity, type RoomEntity } from '$lib/entities/room/room_entity';
+import { type ResponseUserEntity, type UserEntity } from '$lib/entities/user/user_entity';
 
 export interface Responses {
 	event: ResponseEventEntity;
@@ -20,15 +20,6 @@ export interface Entities {
 	user: UserEntity;
 }
 
-export interface EntityObjects {
-	event: EventEntityType;
-	day: DayEntityType;
-	month: MonthEntity;
-	room: RoomEntityType;
-	user: UserEntityType;
-}
-
 export type Keys = keyof Entities;
 export type ResponseOf<K extends Keys> = Responses[K];
 export type EntityOf<K extends Keys> = Entities[K];
-export type ObjectOf<K extends Keys> = Entities[K];
