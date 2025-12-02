@@ -1,4 +1,8 @@
-<form method="POST" action="?/signup" class="flex flex-col gap-5">
+<script lang="ts">
+	import { enhance } from '$app/forms';
+</script>
+
+<form use:enhance method="POST" class="flex flex-col gap-5">
 	<h1 class="font-alternates text-xl text-center font-medium italic">
 		Добро пожаловать!
 	</h1>

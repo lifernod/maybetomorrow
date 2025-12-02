@@ -2,6 +2,7 @@ import { EventFetcher } from '$lib/entities/event/event_fetcher';
 import { DayFetcher } from '$lib/entities/day/day_fetcher';
 import type { Fetcher } from '$lib/api';
 import { MonthFetcher } from '$lib/entities/month/month_fetcher';
+import { UserFetcher } from '$lib/entities/user/user_fetcher';
 
 export class ApiFetcher {
 	private readonly fetcher: Fetcher;
@@ -24,5 +25,9 @@ export class ApiFetcher {
 
 	public month() {
 		return new MonthFetcher(this.fetcher);
+	}
+
+	public user() {
+		return new UserFetcher(this.fetcher);
 	}
 }

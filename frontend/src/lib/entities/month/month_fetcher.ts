@@ -2,6 +2,7 @@ import { BaseFetcher } from '$lib/fetchers/base_fetcher';
 import { type Fetcher } from '$lib/api';
 import type { ResponseMonthEntity } from '$lib/entities/month/month_entity';
 import { converterMap } from '$lib/typeUtils/converterMap';
+import { FetcherResult } from '$lib/fetchers/fetcher_result';
 
 export class MonthFetcher extends BaseFetcher {
 	constructor(fetcher: Fetcher) {
@@ -10,14 +11,13 @@ export class MonthFetcher extends BaseFetcher {
 
 	public async getCurrentMonth() {
 		const now = new Date();
-		const currentMonth = now.getMonth();
+		const currentMonth = now.getMonth() + 1;
 		const currentYear = now.getFullYear();
 
 
-		const result = await this.rawFetch<ResponseMonthEntity>({
+		const result = await this.rawFetch({
 			endpoint: "/user/getCurrentMonth",
 			headers: {
-				// @ts-expect-error Content-Type хэдер существует...
 				"Content-Type": "application/json"
 			},
 			method: "POST",
@@ -27,6 +27,11 @@ export class MonthFetcher extends BaseFetcher {
 			})
 		});
 
-		return result.map(it => converterMap['month'].convertSingleFromResponse(it));
+		if (result.isOk()) {
+			const json = await result.getValue()!.json() as ResponseMonthEntity;
+			return FetcherResult.ok(converterMap['month'].convertSingleFromResponse(json));
+		} else {
+			return FetcherResult.err(result.getError()!);
+		}
 	}
 }

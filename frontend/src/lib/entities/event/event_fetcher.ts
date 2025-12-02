@@ -8,7 +8,7 @@ export class EventFetcher extends BaseFetcher {
 	}
 
 	public async getById(id: EventEntity["eventId"]) {
-		return await this.sendRequest('event', {
+		return await this.sendRequestSingle('event', {
 			endpoint: `/event/getById/${id}`,
 			method: 'GET',
 			includeCredentials: true,
@@ -16,7 +16,7 @@ export class EventFetcher extends BaseFetcher {
 	}
 
 	public async create(event: EventEntity[]) {
-		return await this.sendRequest('event', {
+		return await this.sendRequestSingle('event', {
 			endpoint: '/event/create',
 			method: 'POST',
 			includeCredentials: true,
@@ -25,7 +25,7 @@ export class EventFetcher extends BaseFetcher {
 	}
 
 	public async update(event: EventEntity) {
-		return await this.sendRequest('event', {
+		return await this.sendRequestSingle('event', {
 			endpoint: '/event/update',
 			method: 'PUT',
 			includeCredentials: true,

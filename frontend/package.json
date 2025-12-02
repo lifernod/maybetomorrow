@@ -39,6 +39,7 @@
 		"vite": "^7.2.2"
 	},
 	"dependencies": {
+		"bcryptjs": "^3.0.3",
 		"typescript-result": "^3.5.2"
 	}
 }
