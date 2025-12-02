@@ -26,11 +26,11 @@ type ResponseMonth struct {
 }
 
 type ResponseUser struct {
-	Username     string    `json:"username"`
-	PasswordHash string    `json:"password_hash"`
+	Username     string    `json:"username" cookie:"username"`
+	PasswordHash string    `json:"password_hash" cookie:"password_hash"`
 }
 
 type ResponseLinkEventsToDay struct {
-	DayId     int     `json:"day_id" cookie:"day_id"`
-	EventIDs  []int   `json:"event_ids" cookie:"event_ids"`
+	DayId     int     `json:"day_id"`
+	EventIDs  []int   `json:"event_ids"`
 }
