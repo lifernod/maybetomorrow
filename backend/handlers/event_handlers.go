@@ -16,28 +16,26 @@ func GetEventById(c *fiber.Ctx) error {
 	return c.JSON(event)
 }
 
-func GetDaysByEventId(c *fiber.Ctx) error {
-	resp := [3]ResponseDay{}
-	return c.JSON(resp)
-}
-
 func CreateEvent(c *fiber.Ctx) error {
-	event := new(ResponseEvent)
+	events := new([]database.Event)
 
-    if err := c.BodyParser(event); err != nil { return err }
+    if err := c.BodyParser(events); err != nil { return err }
 
-	id, err := database.CreateEvent(event.EventName, event.EventDescription)
+	ids, err := database.CreateEvent(*events)
 	if err != nil { return err }
-	event.EventID = id
 	
-	return c.JSON(event)
+	for i:=0 ; i < len(*events)-1 ; i++ {
+		(*events)[i].EventID = ids[i]
+	}
+	
+	return c.JSON(events)
 }
 
 func UpdateEvent(c *fiber.Ctx) error {
 	event := new(ResponseEvent)
 
     if err := c.BodyParser(event); err != nil { return err }
-	if err := database.UpdateEvent(event.EventID, event.EventName, event.EventDescription); err != nil { return err }
+	if err := database.UpdateEvent(event.EventID, event.EventName, event.EventDescription, event.StartTime, event.EndTime); err != nil { return err }
 
 	return nil
 }

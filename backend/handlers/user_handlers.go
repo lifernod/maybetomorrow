@@ -8,16 +8,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetUserById(c *fiber.Ctx) error {
-	resp := ResponseUser{}
-	return c.JSON(resp)
-}
-
-func GetCurrentMonthByUserId(c *fiber.Ctx) error {
+func GetCurrentMonth(c *fiber.Ctx) error {
 	//USER_ID_COOKIE_HEADER := "user_id"
 	yearMonth := new(struct {
-		Year   int    `json:"year"`
-		Month  int    `json:"month"`
+		Year   int    `json:"year_number"`
+		Month  int    `json:"month_number"`
 	})
 	if err := c.BodyParser(yearMonth); err != nil { return err }
 	var month string
@@ -65,5 +60,41 @@ func GetCurrentMonthByUserId(c *fiber.Ctx) error {
 		resp.Days[weeks-1][lastDayWeekNumber + i] = ResponseDay{-1, byte(i), nextMonth, database.DayUneditable, []int{}}
 	}
 
+	user := new(ResponseUser)
+	if err := c.CookieParser(user); err != nil { return err }
+
+	dbDays, err := database.GetUserDaysByMonth(user.Username, byte(yearMonth.Month + (yearMonth.Year - 2025) * 12))
+	if err != nil { return err }
+
+	for _, dbDay := range dbDays {
+		for _, line := range resp.Days {
+			for _, respDay := range line {
+				if respDay.DayNumber == dbDay.DayNumber && respDay.MonthNumber == dbDay.MonthNumber {
+					respDay.DayID = dbDay.DayID
+					events, err := database.GetEventsByDayID(respDay.DayID)
+					if err != nil { return err }
+					
+					for _, e := range events { respDay.Events = append(respDay.Events, e.EventID) }
+				}
+			}
+		}
+	}
+
 	return c.JSON(resp)
+}
+
+func CreateUser(c *fiber.Ctx) error {
+	userData := new(struct {
+		Username       string   `json:"username"`
+		PasswordHash   string   `json:"password_hash"`
+	})
+	if err := c.BodyParser(userData); err != nil { return err }
+
+	if err := database.CreateUser(userData.Username, userData.PasswordHash); err != nil { return err }
+
+	return nil
+}
+
+func CheckUser(c *fiber.Ctx) error {
+	return c.SendString("User is validated")
 }

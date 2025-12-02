@@ -18,25 +18,6 @@ func CreateSchema(dbpool *pgxpool.Pool) error {
 	}
 
 	_, err = dbpool.Exec(ctx, `
-	CREATE TABLE IF NOT EXISTS users (
-		username VARCHAR(125) PRIMARY KEY UNIQUE NOT NULL,
-		password_hash VARCHAR(32) NOT NULL
-	);`)
-	if err != nil {
-		return fmt.Errorf("failed to create users table: %w", err)
-	}
-
-	_, err = dbpool.Exec(ctx, `
-	CREATE TABLE IF NOT EXISTS events (
-		event_id SERIAL PRIMARY KEY,
-		event_name VARCHAR(125) NOT NULL,
-		event_description VARCHAR(1024)
-	);`)
-	if err != nil {
-		return fmt.Errorf("failed to create events table: %w", err)
-	}
-
-	_, err = dbpool.Exec(ctx, `
 	CREATE TYPE e_day_type AS ENUM ('undefined', 'free', 'busy', 'uneditable');
 	`)
 	if err != nil {
@@ -51,9 +32,33 @@ func CreateSchema(dbpool *pgxpool.Pool) error {
 	}
 
 	_, err = dbpool.Exec(ctx, `
+	CREATE TABLE IF NOT EXISTS users (
+		username VARCHAR(125) PRIMARY KEY UNIQUE NOT NULL,
+		password_hash VARCHAR(128) NOT NULL
+	);`)
+	if err != nil {
+		return fmt.Errorf("failed to create users table: %w", err)
+	}
+
+	_, err = dbpool.Exec(ctx, `
+	CREATE TABLE IF NOT EXISTS events (
+		event_id SERIAL PRIMARY KEY,
+		event_name VARCHAR(125) NOT NULL,
+		event_description VARCHAR(1024),
+		event_start TIMESTAMP NOT NULL,
+		event_end TIMESTAMP
+	                                  
+	    CONSTRAINT check_event_time CHECK (event_end IS NULL OR event_end >= event_start)
+	);`)
+	if err != nil {
+		return fmt.Errorf("failed to create events table: %w", err)
+	}
+
+	_, err = dbpool.Exec(ctx, `
 	CREATE TABLE IF NOT EXISTS days (
 		day_id SERIAL PRIMARY KEY,
 		day_number SMALLINT NOT NULL DEFAULT 1,
+		month_number SMALLINT NOT NULL DEFAULT 1,
 		day_type e_day_type DEFAULT 'undefined'
 	);`)
 	if err != nil {
@@ -86,9 +91,13 @@ func CreateSchema(dbpool *pgxpool.Pool) error {
 
 	_, err = dbpool.Exec(ctx, `
 	CREATE TABLE IF NOT EXISTS rooms(
-	    roomID TEXT PRIMARY KEY UNIQUE NOT NULL,
+	    room_id UUID PRIMARY KEY UNIQUE NOT NULL,
 	    day_number SMALLINT[] NOT NULL,
-	    month_number SMALLINT[] NOT NULL
+	    month_number SMALLINT[] NOT NULL,
+	    owner_username VARCHAR(125) NOT NULL,
+	    username VARCHAR(155)[] NOT NULL,
+	    
+	    constraint fk_owner_username FOREIGN KEY (owner_username) REFERENCES users(username)
 	);`)
 	if err != nil {
 		return fmt.Errorf("failed to create rooms table: %w", err)

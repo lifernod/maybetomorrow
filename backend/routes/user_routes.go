@@ -6,6 +6,7 @@ import (
 )
 
 func SetupUserRoutes(user fiber.Router) {
-	user.Get("/getById", handlers.GetUserById)
-	user.Get("/getCurrentMonthById", handlers.GetCurrentMonthByUserId)
+	user.Post("/getCurrentMonth", handlers.GetCurrentMonth)
+	user.Post("/create", handlers.CreateUser)
+	user.Get("/checkUser", handlers.CheckUser)
 }

@@ -6,11 +6,6 @@ import (
 	"strconv"
 )
 
-func GetDayById(c *fiber.Ctx) error {
-	resp := ResponseDay{}
-	return c.JSON(resp)
-}
-
 func GetEventsByDayId(c *fiber.Ctx) error {
 	dayId, err := strconv.Atoi(c.Params("id"))
 	if err != nil { return err }
@@ -26,7 +21,7 @@ func CreateDay(c *fiber.Ctx) error {
 
     if err := c.BodyParser(day); err != nil { return err }
 
-	id, err := database.CreateDay(int16(day.DayNumber), string(day.DayType))
+	id, err := database.CreateDay(day.DayNumber, string(day.DayType))
 	if err != nil { return err }
 	day.DayID = id
 	

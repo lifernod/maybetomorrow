@@ -19,9 +19,8 @@ type Event struct {
 	EventName        string `json:"event_name" db:"event_name"`
 	EventDescription string `json:"event_description" db:"event_description"`
 
-	//! FIX TIME
-	EventStart string `json:"event_start" db:"event_start"`
-	EventEnd   string `json:"event_end" db:"event_end"`
+	EventStart string  `json:"event_start" db:"event_start"`
+	EventEnd   *string `json:"event_end" db:"event_end"`
 }
 
 type Day struct {
@@ -35,4 +34,7 @@ type Room struct {
 	RoomID      string `json:"room_id" db:"room_id"`
 	DayNumber   []byte `json:"day_number" db:"day_number"`
 	MonthNumber []byte `json:"month_number" db:"month_number"`
+
+	OwnerUsername string   `json:"owner_username" db:"owner_username"`
+	Username      []string `json:"username" db:"username"`
 }

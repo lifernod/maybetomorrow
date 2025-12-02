@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"github.com/google/uuid"
 	"backend/database"
 )
 
@@ -10,7 +9,7 @@ type ResponseEvent struct {
 	EventName        string    `json:"event_name"`
 	EventDescription string    `json:"event_description"`
 	StartTime        string    `json:"start_time"`
-	EndTime          string    `json:"end_time"`
+	EndTime          *string   `json:"end_time"`
 }
 
 type ResponseDay struct {
@@ -27,12 +26,11 @@ type ResponseMonth struct {
 }
 
 type ResponseUser struct {
-	UserID    uuid.UUID `json:"user_id"`
-	Username  string    `json:"username"`
-	PasswordT string    `json:"password_t"`
+	Username     string    `json:"username"`
+	PasswordHash string    `json:"password_hash"`
 }
 
 type ResponseLinkEventsToDay struct {
-	DayId     int     `json:"day_id"`
-	EventIDs  []int   `json:"event_ids"`
+	DayId     int     `json:"day_id" cookie:"day_id"`
+	EventIDs  []int   `json:"event_ids" cookie:"event_ids"`
 }
