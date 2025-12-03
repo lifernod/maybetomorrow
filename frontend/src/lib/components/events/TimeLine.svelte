@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { useEventForm } from "$lib/state/events/eventForm.svelte";
   import { type VisualEvent } from "$lib/state/events/eventLayout";
   import { getEventTop, getEventHeight } from "$lib/state/events/eventLayout";
   import {
@@ -45,17 +46,17 @@
       style:max-width={`calc(100% - 4rem - 16px)`}
     >
       <h3 class="font-medium text-xs mb-1 leading-tight wrap-break-words">
-        {event.event_name}
+        {event.eventName}
       </h3>
-      {#if event.event_description}
+      {#if event.eventDescription}
         <p
           class="text-xs text-opacity-80 mb-1 line-clamp-1 leading-tight wrap-break-words"
         >
-          {event.event_description}
+          {event.eventDescription}
         </p>
       {/if}
       <p class="text-xs text-opacity-60 leading-tight wrap-break-words">
-        {getEventTimeText(event)}
+        {getEventTimeText({event_start: event.startTime, event_end: event.endTime})}
       </p>
     </div>
   {/each}

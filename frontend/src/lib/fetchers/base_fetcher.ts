@@ -57,7 +57,6 @@ export class BaseFetcher {
 		const init = this.prepareInit(key, props);
 		const response = await this.rawFetchWithInit(props.endpoint, init);
 
-
 		if (response.isOk()) {
 			return FetcherResult.ok(true);
 		} else {

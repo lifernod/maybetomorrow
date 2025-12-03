@@ -13,8 +13,8 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
+<main class="mt-24 flex flex-col items-center">
 <MonthPageHeader monthNumber={data.month.monthNumber}/>
-<main class="mt-8 flex flex-col items-center">
 	<table>
 		<MonthTableHead />
 		{@render children()}

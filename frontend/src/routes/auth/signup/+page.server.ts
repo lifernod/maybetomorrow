@@ -9,8 +9,6 @@ export const actions: Actions = {
 		const username = form.get("username") as string;
 		const password = form.get("password") as string;
 
-		const passwordHash = await hash(password, 5);
-
 		cookies.set("username", username, {
 			sameSite: "lax",
 			httpOnly: true,
@@ -29,7 +27,7 @@ export const actions: Actions = {
 			await ApiFetcher
 				.fetcher(fetch)
 				.user()
-				.createUser({ username, passwordHash });
+				.createUser({ username, passwordHash: password });
 
 		if (result.isOk() && result.getValue()!) {
 			redirect(307, "/home");
