@@ -5,7 +5,7 @@ import {
   DEFAULT_START_TIME,
   type EventTime,
 } from "./eventTime";
-import { Event } from "$lib/types";
+import { Event } from "$lib/types/event";
 
 export const useEventForm = (onSave: (event: Partial<Event>) => void) => {
   const timeSlots = generateTimeSlots();

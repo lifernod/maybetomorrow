@@ -7,6 +7,7 @@ export type MonthInfo = {
     not: string;
   };
   year: number;
+  monthNumber: number;
 };
 
 export class Month {
@@ -34,16 +35,21 @@ export class Month {
   ] as const;
 
   public static getMonthInfo(month_number: number): MonthInfo {
+    let monthIndex: number;
+    let year: number;
+    
     if (month_number % 12 === 0) {
-      return {
-        monthName: Month.months[month_number - 1],
-        year: 2025,
-      };
+      monthIndex = 11; // Декабрь (12 % 12 = 0, но нам нужен индекс 11)
+      year = 2025 + Math.floor((month_number - 1) / 12);
     } else {
-      return {
-        monthName: Month.months[(month_number % 12) - 1],
-        year: 2025 + Math.floor(month_number / 12),
-      };
+      monthIndex = (month_number % 12) - 1;
+      year = 2025 + Math.floor(month_number / 12);
     }
+    
+    return {
+      monthName: Month.months[monthIndex],
+      year: year,
+      monthNumber: month_number // Добавляем номер месяца
+    };
   }
 }

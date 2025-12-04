@@ -4,7 +4,6 @@ import { createApiUrl } from "$lib/utils/url";
 
 export class User {
   public readonly user_id: string; // UUID
-
   public username: string;
   public password_hash: string; // HASH
 
@@ -20,7 +19,7 @@ export class User {
     const month = date.getMonth() + 1;
 
     const response = await fetch(
-      createApiUrl("/api/user/getCurrentMonthById"),
+      createApiUrl("/api/user/getCurrentMonth"),
       {
         method: "POST",
         headers: {
@@ -39,5 +38,49 @@ export class User {
       month_number: number;
     };
     return new Month(json.month_number, json.days);
+  }
+
+  // Добавляем метод для получения текущего пользователя
+  public static getCurrentUser(): string | null {
+    // В реальном приложении это должно получаться из куки или контекста
+    // Пока возвращаем mock значение
+    return "current_user";
+  }
+
+  // Добавляем метод для создания пользователя через API
+  public static async createUser(username: string, password: string): Promise<void> {
+    const response = await fetch(
+      createApiUrl("/api/user/create"),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username,
+          password_hash: password, // На фронтенде хэширование не делаем
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Ошибка создания пользователя");
+    }
+  }
+
+  // Добавляем метод для проверки пользователя
+  public static async validateUser(username: string, password: string): Promise<boolean> {
+    const response = await fetch(
+      createApiUrl("/api/user/checkUser"),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    );
+
+    return response.ok;
   }
 }

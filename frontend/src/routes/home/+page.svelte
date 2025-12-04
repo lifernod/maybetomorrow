@@ -8,6 +8,13 @@
   let { data } = $props();
 
   let viewportWidth = $state(1024);
+  let selectedDays = $state<number[]>([]); // Состояние для выбранных дней
+  
+  // Функция для обновления selectedDays
+  const updateSelectedDays = (days: number[]) => {
+    selectedDays = days;
+    console.log('Выбраны дни:', days); // Для отладки
+  };
 </script>
 
 <svelte:window bind:innerWidth={viewportWidth} />
@@ -18,10 +25,18 @@
 
 <section class="mt-8 flex flex-col items-center">
   {#if viewportWidth > 800}
-    <MonthHeader monthInfo={data.month.monthInfo} />
+    <MonthHeader 
+      monthInfo={data.month.monthInfo} 
+      selectedDays={selectedDays} 
+    />
     <table class="w-1/2">
       <MonthTableHead />
-      <MonthTableBody days={data.month.days} />
+      <!-- Теперь onSelectedDaysChange должен работать -->
+      <MonthTableBody 
+        days={data.month.days} 
+        monthNumber={data.month.monthInfo.monthNumber}
+        onSelectedDaysChange={updateSelectedDays}
+      />
     </table>
   {:else}
     <div>
