@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"backend/handlers"
 	"github.com/gofiber/fiber/v2"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func main() {
@@ -22,7 +23,11 @@ func main() {
 		user := new(handlers.ResponseUser)
 		if err := c.CookieParser(user); err != nil { return err }
 
-		isRight, err := database.ValidateUser(user.Username, user.PasswordHash)
+		hashedPasswordBytes, err := bcrypt.GenerateFromPassword([]byte(user.PasswordHash), bcrypt.DefaultCost)
+		if err != nil { return err }
+		hashedPassword := string(hashedPasswordBytes)
+
+		isRight, err := database.ValidateUser(user.Username, hashedPassword)
 		if err != nil { return err }
 		
 		if isRight { return c.Next() }
